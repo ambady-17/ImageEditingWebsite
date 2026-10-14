@@ -1,0 +1,163 @@
+{% extends 'admin_base.html' %}
+
+{% block page_title %}Dashboard{% endblock %}
+
+{% block content %}
+<section class="dashboard-grid">
+  <article class="stat-card">
+    <div class="stat-card-icon"><i class='bx bxs-user'></i></div>
+    <div>
+      <p class="stat-label">Total Users</p>
+      <h3>{{ total_users }}</h3>
+    </div>
+  </article>
+  <article class="stat-card">
+    <div class="stat-card-icon"><i class='bx bxs-image'></i></div>
+    <div>
+      <p class="stat-label">Uploaded Images</p>
+      <h3>{{ total_uploaded_images }}</h3>
+    </div>
+  </article>
+  <article class="stat-card">
+    <div class="stat-card-icon"><i class='bx bxs-edit-alt'></i></div>
+    <div>
+      <p class="stat-label">Edited Images</p>
+      <h3>{{ total_edited_images }}</h3>
+    </div>
+  </article>
+  <article class="stat-card">
+    <div class="stat-card-icon"><i class='bx bxs-data'></i></div>
+    <div>
+      <p class="stat-label">Storage Usage</p>
+      <h3>{{ storage_usage }}</h3>
+    </div>
+  </article>
+</section>
+
+<section class="panel">
+  <div class="panel-header">
+    <h2>Recent Upload Activity</h2>
+    <a href="{% url 'admin_images' %}" class="btn btn-outline-primary btn-sm">View all images</a>
+  </div>
+  <div class="table-responsive">
+    <table class="table table-hover align-middle mb-0">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Preview</th>
+          <th>Description</th>
+          <th>Uploaded At</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for item in recent_activity %}
+        <tr>
+          <td>#{{ item.id }}</td>
+          <td>
+            <img src="{{ item.document.url }}" alt="Image {{ item.id }}" width="72" height="56" style="object-fit: cover;">
+          </td>
+          <td>{{ item.description|default:"No description" }}</td>
+          <td>{{ item.uploaded_at|date:"M d, Y H:i" }}</td>
+        </tr>
+        {% empty %}
+        <tr>
+          <td colspan="4" class="text-center text-muted">No uploads yet.</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<section class="panel">
+  <div class="panel-header">
+    <h2>Current Users</h2>
+    <a href="{% url 'admin_users' %}" class="btn btn-outline-primary btn-sm">View all users</a>
+  </div>
+  <div class="table-responsive">
+    <table class="table table-hover align-middle mb-0">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Username</th>
+          <th>Email</th>
+          <th>Joined</th>
+          <th>Role</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for user in recent_users %}
+        <tr>
+          <td>#{{ user.id }}</td>
+          <td>{{ user.username }}</td>
+          <td>{{ user.email|default:"-" }}</td>
+          <td>{{ user.date_joined|date:"M d, Y H:i" }}</td>
+          <td>
+            {% if user.is_superuser %}
+            <span class="badge bg-danger">Superuser</span>
+            {% elif user.is_staff %}
+            <span class="badge bg-primary">Staff</span>
+            {% else %}
+            <span class="badge bg-secondary">User</span>
+            {% endif %}
+          </td>
+        </tr>
+        {% empty %}
+        <tr>
+          <td colspan="5" class="text-center text-muted">No users found.</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<section class="panel">
+  <div class="panel-header">
+    <h2>Activity Logs</h2>
+    <span class="text-muted">Latest admin actions</span>
+  </div>
+  <div class="table-responsive">
+    <table class="table table-hover align-middle mb-0">
+      <thead>
+        <tr>
+          <th>Admin</th>
+          <th>Action</th>
+          <th>Time</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for log in activity_logs %}
+        <tr>
+          <td>{{ log.admin_username }}</td>
+          <td>{{ log.action }}</td>
+          <td>{{ log.created_at|date:"M d, Y H:i" }}</td>
+        </tr>
+        {% empty %}
+        <tr>
+          <td colspan="3" class="text-center text-muted">No activity logs yet.</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<section class="quick-actions">
+  <article class="quick-card">
+    <h3>Manage Images</h3>
+    <p>Review uploaded assets and monitor image activity.</p>
+    <a href="{% url 'admin_images' %}" class="btn btn-primary btn-sm">Open Image Management</a>
+  </article>
+  <article class="quick-card">
+    <h3>Open Editor</h3>
+    <p>Jump to the main editor to test user-side editing flow.</p>
+    <a href="{% url 'editor_view' %}" class="btn btn-primary btn-sm">Open Editor</a>
+  </article>
+  <article class="quick-card">
+    <h3>Django Admin</h3>
+    <p>Use advanced administrative controls from Django panel.</p>
+    <a href="/admin/" class="btn btn-primary btn-sm">Open Django Admin</a>
+  </article>
+</section>
+{% endblock %}

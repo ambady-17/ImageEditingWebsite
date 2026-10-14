@@ -1,0 +1,46 @@
+{% extends 'admin_base.html' %}
+
+{% block page_title %}Image Management{% endblock %}
+
+{% block content %}
+<section class="panel">
+  <div class="panel-header">
+    <h2>Uploaded Images</h2>
+    <span class="text-muted">{{ images|length }} items</span>
+  </div>
+
+  <div class="table-responsive">
+    <table class="table table-hover align-middle mb-0">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Preview</th>
+          <th>Description</th>
+          <th>Upload Time</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for img in images %}
+        <tr>
+          <td>#{{ forloop.counter }}</td>
+          <td><img src="{{ img.document.url }}" width="120" height="80" style="object-fit: cover;" alt="Image {{ img.id }}"></td>
+          <td>{{ img.description|default:"No description" }}</td>
+          <td>{{ img.uploaded_at|date:"M d, Y H:i" }}</td>
+          <td>
+            <form method="post" action="{% url 'admin_delete_image' img.id %}" onsubmit="return confirm('Delete image #{{ img.id }}?');">
+              {% csrf_token %}
+              <button type="submit" class="btn btn-sm btn-danger">Delete</button>
+            </form>
+          </td>
+        </tr>
+        {% empty %}
+        <tr>
+          <td colspan="5" class="text-center text-muted">No images uploaded yet.</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</section>
+{% endblock %}

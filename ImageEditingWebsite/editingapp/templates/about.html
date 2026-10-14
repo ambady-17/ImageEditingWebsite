@@ -1,0 +1,334 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<style>
+/* Fix page layout and scrolling */
+html, body {
+  height: auto;
+  overflow-x: hidden;
+  overflow-y: auto;
+  scroll-behavior: smooth;
+}
+
+/* Remove any fixed positioning or overflow constraints */
+#about-section {
+  position: relative;
+  overflow: visible;
+  height: auto;
+}
+
+/* Ensure sections have proper spacing */
+section {
+  min-height: auto;
+  height: auto;
+  overflow: visible;
+  position: relative;
+}
+
+/* Responsive design fixes */
+@media (max-width: 768px) {
+  section {
+    padding: 40px 20px !important;
+  }
+  
+  h1 {
+    font-size: 2rem !important;
+  }
+  
+  h2 {
+    font-size: 1.5rem !important;
+  }
+  
+  h3 {
+    font-size: 1.3rem !important;
+  }
+  
+  .grid-container {
+    grid-template-columns: 1fr !important;
+    gap: 20px !important;
+  }
+}
+
+@media (max-width: 480px) {
+  section {
+    padding: 30px 15px !important;
+  }
+  
+  h1 {
+    font-size: 1.8rem !important;
+  }
+  
+  article, .feature-card {
+    padding: 20px !important;
+  }
+}
+
+/* Smooth scrollbar styling */
+::-webkit-scrollbar {
+  width: 12px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f5f9;
+  border-radius: 6px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 6px;
+  transition: background 0.3s ease;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
+/* Firefox scrollbar */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: #cbd5e1 #f1f5f9;
+}
+
+/* Ensure content is visible and not cut off */
+.content-wrapper {
+  width: 100%;
+  max-width: none;
+  margin: 0;
+  padding: 0;
+  overflow: visible;
+}
+
+/* Fix any potential z-index issues */
+section, article, div {
+  z-index: auto;
+}
+
+/* Ensure proper spacing between sections */
+section + section {
+  margin-top: 0;
+}
+
+/* Add subtle hover effects */
+article:hover, .feature-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+}
+
+/* Smooth transitions */
+* {
+  transition: color 0.3s ease, background-color 0.3s ease;
+}
+</style>
+
+<section id="about-section" style="padding: 80px 0 40px; max-width: 1000px; margin: 0 auto; text-align: center; color: #0f172a; scroll-margin-top: 90px;">
+  <h1 style="font-size: 3rem; margin-bottom: 16px;">Make your images shine with IEW</h1>
+  <p style="font-size: 1.1rem; line-height: 1.9; color: #475569; max-width: 700px; margin: 0 auto 30px;">
+    IEW is a clean, browser-based photo editor built for fast retouching, expressive filters, and polished delivery.
+    Edit, preview and export your images without installing anything.
+  </p>
+  <a href="{% url 'editor_view' %}" class="btn btn-primary" style="padding: 12px 28px; font-size: 1rem;">Open the Editor</a>
+</section>
+
+<section style="padding: 30px 0 80px; background: #f8fafc;">
+  <div style="max-width: 1100px; margin: 0 auto; display: grid; grid-template-columns: repeat(auto-fit,minmax(260px,1fr)); gap: 24px;">
+    <article style="background: #ffffff; border-radius: 20px; padding: 28px; box-shadow: 0 20px 45px rgba(15, 23, 42, 0.08);">
+      <h2 style="margin-bottom: 12px;">Easy editing</h2>
+      <p style="color: #475569; margin-bottom: 20px;">Upload any image and use simple controls for crop, resize, rotate, and color enhancements.</p>
+      <ul style="padding-left: 20px; color: #334155; line-height: 1.8;">
+        <li>✔ Instant preview while you edit</li>
+        <li>✔ Powerful filters like sepia, blur, and sharpen</li>
+        <li>✔ Seamless download once you’re done</li>
+      </ul>
+    </article>
+
+    <article style="background: #ffffff; border-radius: 20px; padding: 28px; box-shadow: 0 20px 45px rgba(15, 23, 42, 0.08);">
+      <h2 style="margin-bottom: 12px;">Built for speed</h2>
+      <p style="color: #475569; margin-bottom: 20px;">The interface is designed to stay fast and responsive on desktop and mobile devices.</p>
+      <ul style="padding-left: 20px; color: #334155; line-height: 1.8;">
+        <li>✔ Lightweight, browser-first UI</li>
+        <li>✔ Minimal distractions while you work</li>
+        <li>✔ No installation required</li>
+      </ul>
+    </article>
+
+    <article style="background: #ffffff; border-radius: 20px; padding: 28px; box-shadow: 0 20px 45px rgba(15, 23, 42, 0.08);">
+      <h2 style="margin-bottom: 12px;">Admin-ready</h2>
+      <p style="color: #475569; margin-bottom: 20px;">Admins can manage users, review uploads, and keep the platform running smoothly.</p>
+      <ul style="padding-left: 20px; color: #334155; line-height: 1.8;">
+        <li>✔ User management from the dashboard</li>
+        <li>✔ Easy image moderation</li>
+        <li>✔ Site settings and activity logs</li>
+      </ul>
+    </article>
+  </div>
+</section>
+
+<section style="padding: 0 0 100px; max-width: 1000px; margin: 0 auto;">
+  <div class="grid-container" style="display: grid; grid-template-columns: repeat(auto-fit,minmax(220px,1fr)); gap: 20px;">
+    <div class="feature-card" style="background: #2563eb; border-radius: 18px; padding: 28px; color: white; text-align: center;">
+      <h3 style="font-size: 2.25rem; margin-bottom: 8px;">Fast</h3>
+      <p>Quick adjustments with clear controls and instant results.</p>
+    </div>
+    <div class="feature-card" style="background: #10b981; border-radius: 18px; padding: 28px; color: white; text-align: center;">
+      <h3 style="font-size: 2.25rem; margin-bottom: 8px;">Friendly</h3>
+      <p>Easy enough for first-time users, powerful enough for pros.</p>
+    </div>
+    <div class="feature-card" style="background: #f59e0b; border-radius: 18px; padding: 28px; color: white; text-align: center;">
+      <h3 style="font-size: 2.25rem; margin-bottom: 8px;">Secure</h3>
+      <p>Admin controls and simple workflows keep the site manageable.</p>
+    </div>
+  </div>
+</section>
+
+<section style="padding: 80px 0; background: #ffffff;">
+  <div style="max-width: 1000px; margin: 0 auto;">
+    <h2 style="text-align: center; font-size: 2.5rem; margin-bottom: 50px; color: #1f2937;">Advanced Features</h2>
+    <div class="grid-container" style="display: grid; grid-template-columns: repeat(auto-fit,minmax(280px,1fr)); gap: 30px;">
+      <div class="feature-card" style="background: #f8fafc; padding: 35px; border-radius: 16px; box-shadow: 0 4px 15px rgba(0,0,0,0.08); text-align: center;">
+        <div style="width: 60px; height: 60px; background: #3b82f6; border-radius: 50%; margin: 0 auto 20px; display: flex; align-items: center; justify-content: center; color: white; font-size: 24px;">AI</div>
+        <h3 style="color: #1f2937; margin-bottom: 15px; font-size: 1.4rem;">Smart Processing</h3>
+        <p style="color: #6b7280; line-height: 1.7;">Intelligent image enhancement with automatic optimization and smart filters that adapt to your content.</p>
+      </div>
+      <div class="feature-card" style="background: #f8fafc; padding: 35px; border-radius: 16px; box-shadow: 0 4px 15px rgba(0,0,0,0.08); text-align: center;">
+        <div style="width: 60px; height: 60px; background: #10b981; border-radius: 50%; margin: 0 auto 20px; display: flex; align-items: center; justify-content: center; color: white; font-size: 24px;">HD</div>
+        <h3 style="color: #1f2937; margin-bottom: 15px; font-size: 1.4rem;">High Quality</h3>
+        <p style="color: #6b7280; line-height: 1.7;">Maintain image quality throughout the editing process with lossless compression and precision tools.</p>
+      </div>
+      <div class="feature-card" style="background: #f8fafc; padding: 35px; border-radius: 16px; box-shadow: 0 4px 15px rgba(0,0,0,0.08); text-align: center;">
+        <div style="width: 60px; height: 60px; background: #f59e0b; border-radius: 50%; margin: 0 auto 20px; display: flex; align-items: center; justify-content: center; color: white; font-size: 24px;">Batch</div>
+        <h3 style="color: #1f2937; margin-bottom: 15px; font-size: 1.4rem;">Batch Processing</h3>
+        <p style="color: #6b7280; line-height: 1.7;">Apply edits to multiple images simultaneously with consistent results and time-saving workflows.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section style="padding: 80px 0; background: #f8fafc;">
+  <div style="max-width: 1000px; margin: 0 auto;">
+    <h2 style="text-align: center; font-size: 2.5rem; margin-bottom: 50px; color: #1f2937;">User Experience</h2>
+    <div class="grid-container" style="display: grid; grid-template-columns: repeat(auto-fit,minmax(300px,1fr)); gap: 40px;">
+      <div style="padding: 30px; border-left: 4px solid #3b82f6; background: white; border-radius: 8px;">
+        <h3 style="color: #1f2937; margin-bottom: 15px; font-size: 1.3rem;">Intuitive Interface</h3>
+        <p style="color: #6b7280; line-height: 1.7; margin-bottom: 20px;">Clean, modern design with drag-and-drop functionality and contextual tools that appear when you need them.</p>
+        <ul style="color: #6b7280; padding-left: 20px; line-height: 1.8;">
+          <li>Visual feedback for every action</li>
+          <li>Keyboard shortcuts for power users</li>
+          <li>Customizable workspace layout</li>
+        </ul>
+      </div>
+      <div style="padding: 30px; border-left: 4px solid #10b981; background: white; border-radius: 8px;">
+        <h3 style="color: #1f2937; margin-bottom: 15px; font-size: 1.3rem;">Performance</h3>
+        <p style="color: #6b7280; line-height: 1.7; margin-bottom: 20px;">Optimized for speed with real-time processing and efficient memory usage for smooth editing experience.</p>
+        <ul style="color: #6b7280; padding-left: 20px; line-height: 1.8;">
+          <li>Instant preview updates</li>
+          <li>Background processing</li>
+          <li>Progressive image loading</li>
+        </ul>
+      </div>
+      <div style="padding: 30px; border-left: 4px solid #f59e0b; background: white; border-radius: 8px;">
+        <h3 style="color: #1f2937; margin-bottom: 15px; font-size: 1.3rem;">Accessibility</h3>
+        <p style="color: #6b7280; line-height: 1.7; margin-bottom: 20px;">Built with accessibility in mind, supporting screen readers, keyboard navigation, and high contrast modes.</p>
+        <ul style="color: #6b7280; padding-left: 20px; line-height: 1.8;">
+          <li>WCAG 2.1 compliant</li>
+          <li>Multi-language support</li>
+          <li>Responsive typography</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section style="padding: 80px 0; background: #ffffff;">
+  <div style="max-width: 1000px; margin: 0 auto; text-align: center;">
+    <h2 style="font-size: 2.5rem; margin-bottom: 40px; color: #1f2937;">Integration & Compatibility</h2>
+    <div style="background: #f8fafc; padding: 50px; border-radius: 20px; box-shadow: 0 8px 30px rgba(0,0,0,0.08); margin-bottom: 40px;">
+      <h3 style="color: #1f2937; margin-bottom: 25px; font-size: 1.8rem;">Works Everywhere</h3>
+      <p style="color: #6b7280; font-size: 1.1rem; line-height: 1.8; margin-bottom: 35px;">
+        Seamlessly integrate with your existing workflow and tools. IEW supports all major browsers and platforms.
+      </p>
+      <div class="grid-container" style="display: grid; grid-template-columns: repeat(auto-fit,minmax(200px,1fr)); gap: 25px;">
+        <div style="padding: 20px;">
+          <div style="font-size: 2rem; margin-bottom: 10px;">Chrome</div>
+          <p style="color: #6b7280; font-size: 0.9rem;">Full support with latest features</p>
+        </div>
+        <div style="padding: 20px;">
+          <div style="font-size: 2rem; margin-bottom: 10px;">Firefox</div>
+          <p style="color: #6b7280; font-size: 0.9rem;">Optimized performance</p>
+        </div>
+        <div style="padding: 20px;">
+          <div style="font-size: 2rem; margin-bottom: 10px;">Safari</div>
+          <p style="color: #6b7280; font-size: 0.9rem;">Native integration</p>
+        </div>
+        <div style="padding: 20px;">
+          <div style="font-size: 2rem; margin-bottom: 10px;">Edge</div>
+          <p style="color: #6b7280; font-size: 0.9rem;">Enhanced compatibility</p>
+        </div>
+      </div>
+    </div>
+    <div class="grid-container" style="display: grid; grid-template-columns: repeat(auto-fit,minmax(250px,1fr)); gap: 30px;">
+      <div class="feature-card" style="background: #f8fafc; padding: 30px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.06);">
+        <h4 style="color: #3b82f6; margin-bottom: 12px; font-size: 1.2rem;">Cloud Storage</h4>
+        <p style="color: #6b7280; line-height: 1.6;">Direct integration with Google Drive, Dropbox, and OneDrive for seamless file management.</p>
+      </div>
+      <div class="feature-card" style="background: #f8fafc; padding: 30px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.06);">
+        <h4 style="color: #3b82f6; margin-bottom: 12px; font-size: 1.2rem;">API Access</h4>
+        <p style="color: #6b7280; line-height: 1.6;">Developer-friendly API for custom integrations and automated workflows.</p>
+      </div>
+      <div class="feature-card" style="background: #f8fafc; padding: 30px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.06);">
+        <h4 style="color: #3b82f6; margin-bottom: 12px; font-size: 1.2rem;">Export Formats</h4>
+        <p style="color: #6b7280; line-height: 1.6;">Support for JPG, PNG, WebP, SVG, and PDF with customizable quality settings.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section style="padding: 100px 0; background: #f8fafc;">
+  <div style="max-width: 800px; margin: 0 auto; text-align: center;">
+    <h2 style="font-size: 2.8rem; margin-bottom: 40px; color: #1f2937;">Start Your Journey</h2>
+    <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 60px 40px; border-radius: 24px; margin-bottom: 50px;">
+      <h3 style="font-size: 2rem; margin-bottom: 25px;">Transform Your Images Today</h3>
+      <p style="font-size: 1.2rem; line-height: 1.8; margin-bottom: 40px; opacity: 0.95;">
+        Join thousands of creators, designers, and professionals who trust IEW for their image editing needs. Experience the perfect blend of simplicity and power.
+      </p>
+      <div style="display: flex; gap: 20px; justify-content: center; flex-wrap: wrap;">
+        <a href="{% url 'register_view' %}" style="background: white; color: #667eea; padding: 18px 35px; text-decoration: none; border-radius: 10px; font-weight: 700; font-size: 1.1rem; transition: all 0.3s;">Get Started Free</a>
+        <a href="{% url 'editor_view' %}" style="background: transparent; color: white; border: 2px solid white; padding: 16px 32px; text-decoration: none; border-radius: 10px; font-weight: 600; font-size: 1.1rem; transition: all 0.3s;">Try Demo</a>
+      </div>
+    </div>
+    <div class="grid-container" style="display: grid; grid-template-columns: repeat(auto-fit,minmax(200px,1fr)); gap: 30px; text-align: center;">
+      <div style="padding: 25px;">
+        <div style="font-size: 3rem; margin-bottom: 15px; color: #3b82f6;">50K+</div>
+        <h4 style="color: #1f2937; margin-bottom: 10px;">Active Users</h4>
+        <p style="color: #6b7280; font-size: 0.9rem;">Trusted by creators worldwide</p>
+      </div>
+      <div style="padding: 25px;">
+        <div style="font-size: 3rem; margin-bottom: 15px; color: #10b981;">2M+</div>
+        <h4 style="color: #1f2937; margin-bottom: 10px;">Images Edited</h4>
+        <p style="color: #6b7280; font-size: 0.9rem;">Processed every month</p>
+      </div>
+      <div style="padding: 25px;">
+        <div style="font-size: 3rem; margin-bottom: 15px; color: #f59e0b;">99.9%</div>
+        <h4 style="color: #1f2937; margin-bottom: 10px;">Uptime</h4>
+        <p style="color: #6b7280; font-size: 0.9rem;">Reliable service guarantee</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section style="padding: 120px 0; background: #0f172a; color: white;">
+  <div style="max-width: 800px; margin: 0 auto; text-align: center;">
+    <h2 style="font-size: 2.8rem; margin-bottom: 30px;">Ready to Transform Your Images?</h2>
+    <p style="font-size: 1.3rem; margin-bottom: 45px; opacity: 0.9;">
+      Experience the future of online image editing with IEW. No downloads, no installations, just powerful editing in your browser.
+    </p>
+    <div style="display: flex; gap: 25px; justify-content: center; flex-wrap: wrap;">
+      <a href="{% url 'register_view' %}" style="background: #3b82f6; color: white; padding: 18px 40px; text-decoration: none; border-radius: 10px; font-weight: 700; font-size: 1.2rem; transition: all 0.3s;">Create Account</a>
+      <a href="{% url 'editor_view' %}" style="background: transparent; color: white; border: 2px solid #3b82f6; padding: 16px 38px; text-decoration: none; border-radius: 10px; font-weight: 600; font-size: 1.2rem; transition: all 0.3s;">Try Editor</a>
+    </div>
+    <p style="margin-top: 40px; opacity: 0.7; font-size: 0.9rem;">
+      2024 IEW - Image Editing Website. All rights reserved.
+    </p>
+  </div>
+</section>
+{% endblock content %}

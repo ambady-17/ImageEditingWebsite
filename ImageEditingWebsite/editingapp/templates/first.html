@@ -1,0 +1,568 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<style>
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+
+  /* Hero Section */
+  .hero-section {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 80px 20px 40px;
+    position: relative;
+    overflow: hidden;
+  }
+  .slider-wrapper {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    overflow: hidden;
+  }
+
+  .slide {
+    position: absolute;
+    inset: 0;
+    background-position: center;
+    background-size: cover;
+    opacity: 0;
+    transition: opacity 1s ease-in-out;
+  }
+
+  .slide.active {
+    opacity: 1;
+  }
+  .welcome-banner {
+    position: absolute;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(255,255,255,0.92);
+    color: #111827;
+    border-left: 4px solid #2563eb;
+    box-shadow: 0 8px 24px rgba(15, 23, 42, 0.08);
+    border-radius: 8px;
+    padding: 12px 18px;
+    font-size: 1.03rem;
+    font-weight: 600;
+    max-width: min(620px, 92vw);
+    z-index: 20;
+    opacity: 0;
+    animation: slideFadeIn 0.7s ease forwards;
+  }
+
+  @keyframes slideFadeIn {
+    from { opacity: 0; transform: translateX(-50%) translateY(-16px); }
+    to { opacity: 1; transform: translateX(-50%) translateY(0); }
+  }
+
+  .hero-section::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    right: -10%;
+    width: 500px;
+    height: 500px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 50%;
+    animation: float 6s ease-in-out infinite;
+  }
+
+  .hero-section::after {
+    content: '';
+    position: absolute;
+    bottom: -30%;
+    left: -5%;
+    width: 400px;
+    height: 400px;
+    background: rgba(255, 255, 255, 0.08);
+    border-radius: 50%;
+    animation: float 8s ease-in-out infinite reverse;
+  }
+
+  .hero-content {
+    text-align: center;
+    max-width: 900px;
+    z-index: 10;
+  }
+
+  .hero-content h1 {
+    font-size: 3.5rem;
+    font-weight: 800;
+    margin-bottom: 20px;
+    text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.3);
+    animation: slideDown 0.8s ease-out;
+    line-height: 1.2;
+  }
+
+  .hero-content p {
+    font-size: 1.3rem;
+    margin-bottom: 40px;
+    line-height: 1.8;
+    opacity: 0.95;
+    animation: fadeIn 1s ease-out 0.3s both;
+  }
+
+  .cta-buttons {
+    display: flex;
+    gap: 20px;
+    justify-content: center;
+    flex-wrap: wrap;
+    margin-bottom: 60px;
+    animation: fadeIn 1s ease-out 0.6s both;
+  }
+
+  .btn-primary, .btn-secondary {
+    padding: 14px 45px;
+    border: none;
+    border-radius: 50px;
+    font-size: 1.1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-decoration: none;
+    display: inline-block;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+
+  .btn-primary {
+    background-color: #fff;
+    color: #667eea;
+  }
+
+  .btn-primary:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3);
+    background-color: #f0f0f0;
+  }
+
+  .btn-secondary {
+    background-color: transparent;
+    color: #fff;
+    border: 2px solid #fff;
+  }
+
+  .btn-secondary:hover {
+    background-color: #fff;
+    color: #667eea;
+    transform: translateY(-4px);
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3);
+  }
+
+  /* Features Section */
+  .features-section {
+    padding: 80px 20px;
+    background: #f8f9fa;
+  }
+
+  .section-header {
+    text-align: center;
+    margin-bottom: 60px;
+  }
+
+  .section-header h2 {
+    font-size: 2.8rem;
+    color: #333;
+    margin-bottom: 15px;
+    font-weight: 700;
+  }
+
+  .section-header p {
+    font-size: 1.2rem;
+    color: #666;
+    max-width: 600px;
+    margin: 0 auto;
+  }
+
+  .features-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 40px;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+
+  .feature-card {
+    background: white;
+    padding: 40px 30px;
+    border-radius: 15px;
+    text-align: center;
+    transition: all 0.3s ease;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+  }
+
+  .feature-card:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 20px 40px rgba(102, 126, 234, 0.2);
+  }
+
+  .feature-icon {
+    font-size: 3.5rem;
+    margin-bottom: 20px;
+    display: inline-block;
+  }
+
+  .feature-card h3 {
+    font-size: 1.6rem;
+    color: #333;
+    margin-bottom: 15px;
+    font-weight: 700;
+  }
+
+  .feature-card p {
+    color: #666;
+    line-height: 1.8;
+    font-size: 1rem;
+  }
+
+  /* Stats Section */
+  .stats-section {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    padding: 80px 20px;
+    color: white;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 40px;
+    max-width: 1000px;
+    margin: 0 auto;
+    text-align: center;
+  }
+
+  .stat-item h3 {
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin-bottom: 10px;
+  }
+
+  .stat-item p {
+    font-size: 1.1rem;
+    opacity: 0.9;
+  }
+
+  /* Tools Section */
+  .tools-section {
+    padding: 80px 20px;
+    background: white;
+  }
+
+  .tools-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 30px;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+
+  .tool-item {
+    background: #f8f9fa;
+    padding: 35px 25px;
+    border-radius: 12px;
+    text-align: center;
+    border-left: 4px solid #667eea;
+    transition: all 0.3s ease;
+  }
+
+  .tool-item:hover {
+    background: white;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+  }
+
+  .tool-icon {
+    font-size: 3rem;
+    margin-bottom: 15px;
+  }
+
+  .tool-item h4 {
+    font-size: 1.3rem;
+    color: #333;
+    margin-bottom: 10px;
+    font-weight: 600;
+  }
+
+  .tool-item p {
+    color: #666;
+    font-size: 0.95rem;
+    line-height: 1.6;
+  }
+
+  /* CTA Section */
+  .cta-section {
+    padding: 80px 20px;
+    background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
+    color: white;
+    text-align: center;
+  }
+
+  .cta-content h2 {
+    font-size: 2.8rem;
+    margin-bottom: 20px;
+    font-weight: 700;
+  }
+
+  .cta-content p {
+    font-size: 1.2rem;
+    margin-bottom: 40px;
+    opacity: 0.95;
+    max-width: 700px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .cta-buttons {
+    display: flex;
+    gap: 20px;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+
+  .btn-cta-primary {
+    background: white;
+    color: #667eea;
+    padding: 14px 45px;
+    border: none;
+    border-radius: 50px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-decoration: none;
+    display: inline-block;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+
+  .btn-cta-primary:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3);
+  }
+
+  /* Animations */
+  @keyframes slideDown {
+    from {
+      opacity: 0;
+      transform: translateY(-30px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+
+  @keyframes float {
+    0%, 100% {
+      transform: translateY(0px);
+    }
+    50% {
+      transform: translateY(-20px);
+    }
+  }
+
+  /* Responsive */
+  @media (max-width: 768px) {
+    .hero-content h1 {
+      font-size: 2.2rem;
+    }
+
+    .hero-content p {
+      font-size: 1rem;
+    }
+
+    .section-header h2 {
+      font-size: 2rem;
+    }
+
+    .stat-item h3 {
+      font-size: 2rem;
+    }
+
+    .cta-content h2 {
+      font-size: 2rem;
+    }
+
+    .cta-buttons {
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .btn-primary, .btn-secondary, .btn-cta-primary {
+      width: 100%;
+      max-width: 300px;
+    }
+  }
+</style>
+
+<!-- Hero Section -->
+<section class="hero-section">
+  {% if user.is_authenticated %}
+  <div class="welcome-banner">
+    Welcome back, <strong>{{ user.username }}</strong>!
+  </div>
+  {% endif %}
+
+  <div class="slider-wrapper">
+    {% for img in slider_images %}
+      <div class="slide{% if forloop.first %} active{% endif %}" style="background-image: url('{{ img }}');"></div>
+    {% endfor %}
+  </div>
+
+  <div class="hero-content">
+    <h1>Transform Your Images Instantly</h1>
+    <p>Professional image editing made simple. Crop, filter, enhance, and create stunning visuals without leaving your browser.</p>
+    
+    <div class="cta-buttons">
+      <a href="{% url 'register_view' %}" class="btn-primary">Start Editing Free</a>
+      <a href="{% url 'about_view' %}" class="btn-secondary">Explore Features</a>
+    </div>
+  </div>
+</section>
+
+<!-- Features Section -->
+<section class="features-section">
+  <div class="section-header">
+    <h2>Why Choose Us?</h2>
+    <p>Powerful features designed for professionals and beginners alike</p>
+  </div>
+  
+  <div class="features-grid">
+    <div class="feature-card">
+      <div class="feature-icon">⚡</div>
+      <h3>Lightning Fast</h3>
+      <p>Edit and enhance images in real-time with our optimized processing engine</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">🎨</div>
+      <h3>Advanced Tools</h3>
+      <p>Professional filters, effects, and adjustment tools at your fingertips</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">☁️</div>
+      <h3>Cloud Powered</h3>
+      <p>Edit anywhere, anytime. Your work is always saved and accessible</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">🔒</div>
+      <h3>100% Secure</h3>
+      <p>Your images are encrypted and never shared without your permission</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">📱</div>
+      <h3>Mobile Ready</h3>
+      <p>Seamlessly edit on desktop, tablet, or mobile devices</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">✅</div>
+      <h3>No Sign Up Required</h3>
+      <p>Start editing immediately. Create an account only when you're ready</p>
+    </div>
+  </div>
+</section>
+
+<!-- Stats Section -->
+<section class="stats-section">
+  <div class="stats-grid">
+    <div class="stat-item">
+      <h3>10K+</h3>
+      <p>Active Users</p>
+    </div>
+    <div class="stat-item">
+      <h3>1M+</h3>
+      <p>Images Edited</p>
+    </div>
+    <div class="stat-item">
+      <h3>50+</h3>
+      <p>Professional Tools</p>
+    </div>
+    <div class="stat-item">
+      <h3>24/7</h3>
+      <p>Support Available</p>
+    </div>
+  </div>
+</section>
+
+<!-- Tools Section -->
+<section class="tools-section">
+  <div class="section-header">
+    <h2>Featured Editing Tools</h2>
+    <p>Everything you need to create beautiful images</p>
+  </div>
+
+  <div class="tools-grid">
+    <div class="tool-item">
+      <div class="tool-icon">✂️</div>
+      <h4>Crop & Resize</h4>
+      <p>Adjust dimensions with precision. Perfect for social media and web</p>
+    </div>
+    <div class="tool-item">
+      <div class="tool-icon">🎭</div>
+      <h4>Filters & Effects</h4>
+      <p>Apply stunning filters and artistic effects to enhance your images</p>
+    </div>
+    <div class="tool-item">
+      <div class="tool-icon">☀️</div>
+      <h4>Brightness & Contrast</h4>
+      <p>Fine-tune exposure and clarity for perfect lighting</p>
+    </div>
+    <div class="tool-item">
+      <div class="tool-icon">🖌️</div>
+      <h4>Drawing Tools</h4>
+      <p>Add annotations, sketches, and creative elements to your images</p>
+    </div>
+    <div class="tool-item">
+      <div class="tool-icon">🔄</div>
+      <h4>Transform</h4>
+      <p>Rotate, flip, and distort images with ease</p>
+    </div>
+    <div class="tool-item">
+      <div class="tool-icon">✨</div>
+      <h4>Enhancements</h4>
+      <p>Sharpen, blur, and apply intelligent enhancement algorithms</p>
+    </div>
+  </div>
+</section>
+
+<!-- CTA Section -->
+<section class="cta-section">
+  <div class="cta-content">
+    <h2>Ready to Create?</h2>
+    <p>Join thousands of users who trust our platform for their image editing needs. Start free today!</p>
+    <div class="cta-buttons">
+      <a href="{% url 'register_view' %}" class="btn-cta-primary">Sign Up Now</a>
+    </div>
+  </div>
+</section>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const slides = document.querySelectorAll('.slide');
+    if (!slides.length) return;
+    let idx = 0;
+    setInterval(() => {
+      slides[idx].classList.remove('active');
+      idx = (idx + 1) % slides.length;
+      slides[idx].classList.add('active');
+    }, 3500);
+  });
+</script>
+
+{% endblock content %}

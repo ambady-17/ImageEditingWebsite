@@ -1,0 +1,137 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>IEW Admin Dashboard</title>
+  <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,600,700|Poppins:300,400,500,600,700" rel="stylesheet">
+  <link href="{% static 'assets/vendor/bootstrap/css/bootstrap.min.css' %}" rel="stylesheet">
+  <link href="{% static 'assets/vendor/boxicons/css/boxicons.min.css' %}" rel="stylesheet">
+  <link href="{% static 'assets/css/admin.css' %}" rel="stylesheet">
+</head>
+<body class="admin-body">
+  <div class="admin-shell">
+    <aside class="admin-sidebar">
+      <div class="admin-brand">
+        <a href="{% url 'admin_dashboard' %}">
+          {% if site_setting and site_setting.logo %}
+            <img src="{{ site_setting.logo.url }}" alt="Logo" style="height:30px; width:auto; margin-right:8px; vertical-align:middle;">
+          {% endif %}
+          {{ site_setting.site_name|default:'IEW Admin' }}
+        </a>
+      </div>
+      <nav class="admin-nav">
+        <a href="{% url 'admin_dashboard' %}" class="admin-nav-link {% if request.resolver_match.url_name == 'admin_dashboard' %}active{% endif %}"><i class='bx bxs-dashboard'></i> Dashboard</a>
+        <a href="{% url 'admin_users' %}" class="admin-nav-link {% if request.resolver_match.url_name == 'admin_users' %}active{% endif %}"><i class='bx bxs-user'></i> User Management</a>
+        <a href="{% url 'admin_images' %}" class="admin-nav-link {% if request.resolver_match.url_name == 'admin_images' %}active{% endif %}"><i class='bx bxs-image'></i> Image Management</a>
+        <a href="{% url 'message_center' %}" class="admin-nav-link {% if request.resolver_match.url_name == 'message_center' %}active{% endif %}"><i class='bx bxs-message-dots'></i> Messages</a>
+        <a href="{% url 'admin_settings' %}" class="admin-nav-link {% if request.resolver_match.url_name == 'admin_settings' %}active{% endif %}"><i class='bx bxs-cog'></i> Settings</a>
+      </nav>
+      <div class="admin-sidebar-foot">
+        <a href="{% url 'logout_view' %}" class="admin-nav-link logout-link"><i class='bx bxs-log-out-circle'></i> Logout</a>
+      </div>
+    </aside>
+    <main class="admin-main">
+      <header class="admin-header">
+        <div>
+          <h1>{% block page_title %}Admin Panel{% endblock %}</h1>
+          <p class="admin-subtitle">Clean, responsive overview for your Image Editing Website.</p>
+        </div>
+        <div class="admin-header-actions">
+          <a href="/" class="btn btn-outline-primary">View Site</a>
+        </div>
+      </header>
+
+      <section class="admin-content">
+        {% if messages %}
+          <div class="admin-toast-list">
+            {% for message in messages %}
+              <div class="admin-toast admin-toast-{{ message.tags }}">{{ message }}</div>
+            {% endfor %}
+          </div>
+        {% endif %}
+
+        {% block content %}{% endblock %}
+      </section>
+    </main>
+  </div>
+  {% if user.is_authenticated %}
+  <script>
+    (function() {
+      const sessionKey = 'iew-active-tab';
+      const channelName = 'iew-auth-tabs';
+      const alreadyInitialized = sessionStorage.getItem(sessionKey);
+      const isFreshLogin = new URLSearchParams(window.location.search).get('fresh') === '1';
+
+      try {
+        const channel = ('BroadcastChannel' in window) ? new BroadcastChannel(channelName) : null;
+        let anotherTabDetected = false;
+
+        if (channel) {
+          channel.onmessage = function(event) {
+            if (!event || !event.data) return;
+            if (event.data.type === 'PING') {
+              channel.postMessage({ type: 'PONG' });
+            }
+            if (event.data.type === 'PONG') {
+              anotherTabDetected = true;
+            }
+          };
+        }
+
+        if (isFreshLogin) {
+          sessionStorage.setItem(sessionKey, '1');
+          if (window.history && window.history.replaceState) {
+            const cleanUrl = window.location.pathname + window.location.hash;
+            window.history.replaceState({}, document.title, cleanUrl);
+          }
+          return;
+        }
+
+        if (!alreadyInitialized) {
+          if (channel) {
+            channel.postMessage({ type: 'PING' });
+          }
+
+          setTimeout(function() {
+            if (!anotherTabDetected) {
+              fetch("{% url 'browser_close_logout' %}", {
+                method: 'POST',
+                headers: {
+                  'X-CSRFToken': (document.cookie.match(/csrftoken=([^;]+)/) || [])[1] || '',
+                  'X-Requested-With': 'XMLHttpRequest'
+                },
+                credentials: 'same-origin'
+              }).finally(function() {
+                window.location.href = "{% url 'login_view' %}";
+              });
+              return;
+            }
+            sessionStorage.setItem(sessionKey, '1');
+          }, 300);
+          return;
+        }
+
+        sessionStorage.setItem(sessionKey, '1');
+      } catch (error) {
+        sessionStorage.setItem(sessionKey, '1');
+      }
+    })();
+  </script>
+  {% endif %}
+  <!-- Bootstrap JavaScript -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+      if (!window.location.hash) return;
+      var target = document.querySelector(window.location.hash);
+      if (target) {
+        setTimeout(function() {
+          target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }, 50);
+      }
+    });
+  </script>
+</body>
+</html>

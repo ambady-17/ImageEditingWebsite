@@ -1,0 +1,189 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<style>
+  .page-bg {
+    position: fixed;
+    inset: 0;
+    background: center/cover no-repeat fixed;
+    z-index: 0;
+  }
+  .background-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(30, 41, 59, 0.45);
+    z-index: 1;
+  }
+
+  .dface-wrapper {
+    position: relative;
+    z-index: 2;
+    max-width: 1150px;
+    margin: 70px auto 40px auto;
+    background: rgba(255,255,255,0.95);
+    border-radius: 16px;
+    box-shadow: 0 16px 36px rgba(15, 23, 42, 0.17);
+    overflow: hidden;
+  }
+
+  .dface-content {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 18px;
+    padding: 24px;
+  }
+
+  .df-panel {
+    background: #fff;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    padding: 16px;
+  }
+
+  .df-panel h2 {
+    margin: 0 0 10px;
+    font-size: 1.08rem;
+    color: #1f2937;
+  }
+
+  .df-toolbar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 10px;
+  }
+
+  .btn-modern {
+    border: 1px solid #cbd5e1;
+    color: #1f2937;
+    background: #fff;
+    padding: 7px 10px;
+    border-radius: 8px;
+    font-weight: 500;
+    font-size: 0.88rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .btn-modern:hover {
+    background: #f8fafc;
+    border-color: #96a7b8;
+    color: #0f172a;
+  }
+
+  .btn-modern.primary {
+    background: #3b82f6;
+    color: #ffffff;
+    border-color: #3b82f6;
+  }
+
+  .btn-modern.primary:hover {
+    background: #2563eb;
+    border-color: #2563eb;
+  }
+
+  .dface-preview {
+    width: 100%;
+    min-height: 266px;
+    border: 1px solid #cbd5e1;
+    border-radius: 12px;
+    display: grid;
+    place-items: center;
+    overflow: hidden;
+    background: #f8fafc;
+  }
+
+  .dface-preview img {
+    max-width: 100%;
+    max-height: 460px;
+    object-fit: contain;
+    border-radius: 10px;
+  }
+
+  .dface-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 14px;
+  }
+
+  .order-row {display: flex; flex-wrap: wrap; gap: 10px; align-items: center;}
+
+  @media (max-width: 990px) {
+    .dface-content { grid-template-columns: 1fr; }
+  }
+
+  @media (max-width: 620px) {
+    .dface-wrapper { margin: 15px; }
+    .df-panel { padding: 12px; }
+  }
+</style>
+
+<div class="page-bg" id="pageBg" data-bg="{{ editor_bg|default:'/static/assets/img/hero-bg.jpg' }}"></div>
+<div class="background-overlay"></div>
+<div class="dface-wrapper">
+  <div class="dface-content">
+    <section class="df-panel">
+      <h2>Image upload</h2>
+      <form method="post" enctype="multipart/form-data" class="order-row">
+        {% csrf_token %}
+        <label class="btn-modern primary" for="id_document">Select Image</label>
+        <input type="file" id="id_document" name="document" accept="image/*" required style="display:none" onchange="document.getElementById('documentName').textContent = this.files.length ? this.files[0].name : 'No file chosen';" />
+        <span id="documentName" style="font-size:0.9rem; color:#64748b;">No file chosen</span>
+        <button type="submit" class="btn-modern primary">Upload</button>
+      </form>
+      <p style="margin-top:10px; color:#475569; font-size:0.88rem;">Use the tools section for quick effects and transforms.</p>
+
+      <div class="df-toolbar">
+        <a class="btn-modern" href="{% url 'brightp_fun' %}">Brightness +</a>
+        <a class="btn-modern" href="{% url 'brightn_fun' %}">Brightness -</a>
+        <a class="btn-modern" href="{% url 'crop_html' %}">Crop</a>
+        <a class="btn-modern" href="{% url 'scaleup_fun' %}">Scale Up</a>
+        <a class="btn-modern" href="{% url 'scaledown_fun' %}">Scale Down</a>
+        <a class="btn-modern" href="{% url 'gray_fun' %}">Gray</a>
+        <a class="btn-modern" href="{% url 'edge_fun' %}">Edge</a>
+        <a class="btn-modern" href="{% url 'blur_fun' %}">Blur</a>
+        <a class="btn-modern" href="{% url 'gaussian_fun' %}">Gaussian</a>
+        <a class="btn-modern" href="{% url 'sharpen_fun' %}">Sharpen</a>
+        <a class="btn-modern" href="{% url 'sepia_fun' %}">Sepia</a>
+        <a class="btn-modern" href="{% url 'negative_fun' %}">Negative</a>
+      </div>
+
+      <div class="df-actions" style="margin-top: 14px;">
+        <a class="btn-modern" href="{% url 'dface' %}">Reset Page</a>
+      </div>
+    </section>
+
+    <section class="df-panel">
+      <h2>Preview</h2>
+      <div class="dface-preview">
+        {% if post %}
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px; width:100%;">
+            <img src="{{ path }}" alt="Original upload">
+            <img src="{{ path_temp }}" alt="Edited preview">
+          </div>
+          <div class="dface-actions">
+            <a class="btn-modern primary" href="{{ path }}" download="original.png">Download Original</a>
+            {% if path_temp %}
+            <a class="btn-modern primary" href="{{ path_temp }}" download="edited.png">Download Edited</a>
+            <a class="btn-modern" href="{% url 'change_fun' %}">Apply Changes</a>
+            {% endif %}
+          </div>
+        {% else %}
+          <span style="color:#64748b;">No image uploaded yet. Upload a file to see your preview.</span>
+        {% endif %}
+      </div>
+    </section>
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      var pageBg = document.getElementById('pageBg');
+      if (pageBg) {
+        var bg = pageBg.getAttribute('data-bg');
+        if (bg) { pageBg.style.backgroundImage = 'url("' + bg + '")'; }
+      }
+    });
+  </script>
+
+{% endblock content %}

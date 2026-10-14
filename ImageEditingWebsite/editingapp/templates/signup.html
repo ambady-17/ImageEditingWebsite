@@ -1,0 +1,393 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<style>
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+
+  html, body {
+    height: 100%;
+    overflow: hidden;
+  }
+
+  /* Neutralize base.html wrappers */
+  section#hero,
+  section#hero > center {
+    all: unset;
+    display: block;
+  }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+    background: url({{ auth_bg|default:"/static/assets/img/hero-bg.jpg" }}) center/cover no-repeat fixed;
+    position: relative;
+  }
+
+  .overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(15, 23, 42, 0.45);
+    z-index: 0;
+  }
+
+  /* Full-screen centered wrapper below the navbar */
+  .signup-wrapper {
+    position: fixed;
+    top: 70px;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 2;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 16px;
+  }
+
+  .signup-container {
+    width: 100%;
+    max-width: 480px;
+    max-height: 100%;
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* Card scrolls internally — thin, clean scrollbar */
+  .signup-card {
+    background: white;
+    border-radius: 14px;
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.25);
+    padding: 32px 36px;
+    border: 1px solid #e5e7eb;
+    overflow-y: auto;
+    max-height: calc(100vh - 110px);
+    scrollbar-width: thin;
+    scrollbar-color: #d1d5db transparent;
+  }
+
+  .signup-card::-webkit-scrollbar {
+    width: 5px;
+  }
+  .signup-card::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  .signup-card::-webkit-scrollbar-thumb {
+    background: #d1d5db;
+    border-radius: 10px;
+  }
+  .signup-card::-webkit-scrollbar-thumb:hover {
+    background: #9ca3af;
+  }
+
+  .signup-header {
+    text-align: center;
+    margin-bottom: 22px;
+  }
+
+  .signup-icon {
+    font-size: 2.4rem;
+    margin-bottom: 10px;
+  }
+
+  .signup-header h1 {
+    font-size: 1.65rem;
+    font-weight: 700;
+    color: #1f2937;
+    margin-bottom: 6px;
+  }
+
+  .signup-header p {
+    font-size: 0.9rem;
+    color: #6b7280;
+  }
+
+  .form-group {
+    margin-bottom: 13px;
+  }
+
+  .form-group label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: 500;
+    color: #1f2937;
+    font-size: 0.88rem;
+  }
+
+  .form-group input {
+    width: 100%;
+    padding: 9px 12px;
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
+    font-size: 0.88rem;
+    font-family: inherit;
+    transition: all 0.3s ease;
+    color: #1f2937;
+    background: white;
+  }
+
+  .form-group input:focus {
+    outline: none;
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+  }
+
+  .form-group input::placeholder {
+    color: #9ca3af;
+  }
+
+  .form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+  }
+
+  .form-row .form-group {
+    margin-bottom: 0;
+  }
+
+  .password-requirements {
+    background: #fef3c7;
+    border: 1px solid #fcd34d;
+    border-radius: 8px;
+    padding: 10px 12px;
+    margin-bottom: 16px;
+    font-size: 0.82rem;
+    color: #92400e;
+    border-left: 4px solid #f59e0b;
+  }
+
+  .requirements-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  .requirements-list li {
+    padding: 3px 0;
+    padding-left: 18px;
+    position: relative;
+  }
+
+  .requirements-list li::before {
+    content: '✓';
+    position: absolute;
+    left: 0;
+    color: #f59e0b;
+    font-weight: 700;
+  }
+
+  .btn-signup {
+    width: 100%;
+    padding: 11px;
+    background: #3b82f6;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 0.93rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    margin-top: 6px;
+  }
+
+  .btn-signup:hover {
+    background: #2563eb;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 16px rgba(37, 99, 235, 0.3);
+  }
+
+  .btn-signup:active {
+    transform: translateY(0);
+  }
+
+  .divider {
+    display: flex;
+    align-items: center;
+    margin: 18px 0;
+    gap: 12px;
+  }
+
+  .divider::before,
+  .divider::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: #e5e7eb;
+  }
+
+  .divider span {
+    font-size: 0.82rem;
+    color: #6b7280;
+  }
+
+  .login-link {
+    text-align: center;
+    margin-top: 14px;
+    font-size: 0.88rem;
+    color: #6b7280;
+  }
+
+  .login-link a {
+    color: #3b82f6;
+    text-decoration: none;
+    font-weight: 600;
+    transition: color 0.3s ease;
+  }
+
+  .login-link a:hover {
+    color: #2563eb;
+  }
+
+  .terms-info {
+    background: #eff6ff;
+    border: 1px solid #bfdbfe;
+    border-radius: 8px;
+    padding: 10px 12px;
+    margin-top: 16px;
+    font-size: 0.78rem;
+    color: #1e40af;
+    border-left: 4px solid #3b82f6;
+    line-height: 1.5;
+  }
+
+  .error-message {
+    background: #dcfce7;
+    border: 1px solid #bbf7d0;
+    border-radius: 8px;
+    padding: 10px 12px;
+    margin-bottom: 16px;
+    font-size: 0.88rem;
+    color: #15803d;
+    border-left: 4px solid #22c55e;
+  }
+
+  @media (max-width: 480px) {
+    .signup-card {
+      padding: 24px 20px;
+    }
+    .signup-header h1 {
+      font-size: 1.4rem;
+    }
+    .signup-icon {
+      font-size: 2rem;
+    }
+    .form-row {
+      grid-template-columns: 1fr;
+      gap: 0;
+    }
+    .form-row .form-group {
+      margin-bottom: 13px;
+    }
+  }
+</style>
+
+<div class="overlay"></div>
+<div class="signup-wrapper">
+  <div class="signup-container">
+    <div class="signup-card">
+    <div class="signup-header">
+      <div class="signup-icon">🚀</div>
+      <h1>Get Started</h1>
+      <p>Create your account and start editing images today</p>
+    </div>
+
+    <form method="post" action="/register/">
+      {% csrf_token %}
+
+      {% if form.non_field_errors %}
+        <div class="error-message">
+          ⚠️ {{ form.non_field_errors.0 }}
+        </div>
+      {% endif %}
+
+      <div class="form-group">
+        <label for="username">Username</label>
+        <input 
+          type="text" 
+          id="username" 
+          name="username" 
+          placeholder="Choose a unique username"
+          required
+          autofocus
+        >
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label for="fname">First Name</label>
+          <input 
+            type="text" 
+            id="fname" 
+            name="fname" 
+            placeholder="First name"
+            required
+          >
+        </div>
+        <div class="form-group">
+          <label for="lname">Last Name</label>
+          <input 
+            type="text" 
+            id="lname" 
+            name="lname" 
+            placeholder="Last name"
+            required
+          >
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="email">Email Address</label>
+        <input 
+          type="email" 
+          id="email" 
+          name="email" 
+          placeholder="your@email.com"
+          required
+        >
+      </div>
+
+      <div class="form-group">
+        <label for="pass1">Password</label>
+        <input 
+          type="password" 
+          id="pass1" 
+          name="pass1" 
+          placeholder="Create a strong password"
+          required
+        >
+      </div>
+
+      <div class="form-group">
+        <label for="pass2">Confirm Password</label>
+        <input 
+          type="password" 
+          id="pass2" 
+          name="pass2" 
+          placeholder="Confirm your password"
+          required
+        >
+      </div>
+
+      
+      <button type="submit" class="btn-signup">Create Account</button>
+    </form>
+
+    <div class="divider">
+      <span>Already have an account?</span>
+    </div>
+
+    <div class="login-link">
+      Already registered? <a href="{% url 'login_view' %}">Sign in here</a>
+    </div>
+
+    <div class="terms-info">
+      💡 By creating an account, you agree to our Terms of Service and acknowledge that your images are encrypted and secure. We never store your personal data beyond what's necessary for your account.
+    </div>
+    </div>
+  </div>
+</div>
+
+{% endblock content %}

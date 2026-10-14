@@ -1,0 +1,470 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta content="width=device-width, initial-scale=1.0" name="viewport">
+
+  <title>Image Editing Website</title>
+  <meta content="" name="description">
+  <meta content="" name="keywords">
+
+  <!-- Favicons -->
+  <link href="{% static 'assets/img/favicon.png' %}" rel="icon">
+  <link href="{% static 'assets/img/apple-touch-icon.png' %}" rel="apple-touch-icon">
+
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,300i,400,400i,600,600i,700,700i|Raleway:300,300i,400,400i,500,500i,600,600i,700,700i|Poppins:300,300i,400,400i,500,500i,600,600i,700,700i" rel="stylesheet">
+
+  <!-- Vendor CSS Files -->
+  <link href="{% static 'assets/vendor/aos/aos.css' %}" rel="stylesheet">
+  <link href="{% static 'assets/vendor/bootstrap/css/bootstrap.min.css' %}" rel="stylesheet">
+  <link href="{% static 'assets/vendor/bootstrap-icons/bootstrap-icons.css' %}' %}" rel="stylesheet">
+  <link href="{% static 'assets/vendor/boxicons/css/boxicons.min.css' %}" rel="stylesheet">
+  <link href="{% static 'assets/vendor/glightbox/css/glightbox.min.css' %}" rel="stylesheet">
+  <link href="{% static 'assets/vendor/swiper/swiper-bundle.min.css' %}" rel="stylesheet">
+
+  <!-- Template Main CSS File -->
+  <link href="{% static 'assets/css/style.css' %}" rel="stylesheet">
+
+  <style>
+    #header {
+      background: white !important;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+      height: 70px;
+      display: flex;
+      align-items: center;
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 999;
+    }
+
+    #header .logo h1 {
+      margin: 0;
+    }
+
+    #header .logo h1 a {
+      color: #1f2937 !important;
+      font-size: 1.3rem;
+      font-weight: 700;
+      text-decoration: none;
+    }
+
+    #header .logo h1 span {
+      color: #3b82f6;
+    }
+
+    #header .navbar {
+      margin: 0;
+      padding: 0;
+    }
+
+    #header .navbar ul {
+      display: flex;
+      list-style: none;
+      gap: 32px;
+      margin: 0;
+      padding: 0;
+    }
+
+    #header .navbar ul li a {
+      color: #1f2937;
+      font-size: 0.95rem;
+      font-weight: 500;
+      text-decoration: none;
+      transition: all 0.3s ease;
+      position: relative;
+      padding: 5px 0;
+    }
+
+    #header .navbar ul li a::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 0;
+      height: 2px;
+      background: #3b82f6;
+      transition: width 0.3s ease;
+    }
+
+    #header .navbar ul li a:hover::after {
+      width: 100%;
+    }
+
+    #header .navbar ul li a:hover {
+      color: #3b82f6;
+    }
+
+    #header .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 20px;
+      height: 100%;
+    }
+
+    @media (max-width: 768px) {
+      #header .navbar ul {
+        gap: 16px;
+      }
+
+      #header .navbar ul li a {
+        font-size: 0.85rem;
+      }
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    /* Toast notification */
+    .toast-wrapper {
+      position: fixed;
+      top: 80px;
+      right: 20px;
+      z-index: 9999;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      align-items: flex-end;
+      pointer-events: none;
+    }
+
+    .toast {
+      min-width: 250px;
+      max-width: 360px;
+      background: rgba(255,255,255,0.94);
+      color: #111927;
+      border-left: 4px solid #2563eb;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.16);
+      border-radius: 10px;
+      padding: 12px 14px;
+      font-size: 0.95rem;
+      line-height: 1.4;
+      font-weight: 500;
+      opacity: 0;
+      transform: translateY(-10px);
+      transition: opacity 0.35s ease, transform 0.35s ease;
+      pointer-events: auto;
+    }
+
+    .toast.show {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    @keyframes toastExit {
+      0% { opacity: 1; transform: translateY(0); }
+      100% { opacity: 0; transform: translateY(-16px); }
+    }
+
+    .toast.hide {
+      animation: toastExit 0.35s forwards;
+    }
+
+    /* Success toast styling */
+    .toast-success {
+      background: rgba(34, 197, 94, 0.95);
+      color: white;
+      border-left: 4px solid #16a34a;
+    }
+
+    .toast-success .toast-icon {
+      color: #ffffff;
+      margin-right: 8px;
+    }
+
+    /* Error toast styling */
+    .toast-error {
+      background: rgba(239, 68, 68, 0.95);
+      color: white;
+      border-left: 4px solid #dc2626;
+    }
+
+    .toast-error .toast-icon {
+      color: #ffffff;
+      margin-right: 8px;
+    }
+
+    /* Info toast styling */
+    .toast-info {
+      background: rgba(59, 130, 246, 0.95);
+      color: white;
+      border-left: 4px solid #2563eb;
+    }
+
+    .toast-info .toast-icon {
+      color: #ffffff;
+      margin-right: 8px;
+    }
+
+    .toast-icon {
+      font-size: 1.1em;
+      vertical-align: middle;
+    }
+
+  </style>
+
+  <!-- =======================================================
+  * Template Name: Squadfree - v4.9.1
+  * Template URL: https://bootstrapmade.com/squadfree-free-bootstrap-template-creative/
+  * Author: BootstrapMade.com
+  * License: https://bootstrapmade.com/license/
+  ======================================================== -->
+</head>
+
+<body>
+
+  <!-- ======= Header ======= -->
+  <header id="header" class="fixed-top">
+    <div class="container">
+      <div class="logo">
+        <h1><a href="/"><span>IEW</span></a></h1>
+      </div>
+
+      <nav id="navbar" class="navbar">
+        <ul>
+          <li><a href="/">Home</a></li>
+{% if user.is_authenticated %}
+          <li><a href="{% url 'editor_view' %}">Editing Page</a></li>
+          <li><a href="{% url 'user_messages' %}">My Messages</a></li>
+{% endif %}
+          <li><a href="{% url 'about_view' %}#about-section">About</a></li>
+          <li><a href="{% url 'contact_view' %}#contact-section">Contact</a></li>
+{% if not user.is_authenticated %}
+          <li><a href="{% url 'register_view' %}">Register</a></li>
+{% endif %}
+{% if user.is_authenticated %}
+          {% if user.is_staff or user.is_superuser %}
+          <li><a href="{% url 'admin_dashboard' %}">Admin Dashboard</a></li>
+          {% endif %}
+          <li><a href="{% url 'logout_view' %}">Logout</a></li>
+{% else %}
+          <li><a href="{% url 'login_view' %}">Login</a></li>
+{% endif %}
+        </ul>
+      </nav>
+    </div>
+  </header><!-- End Header -->
+
+  {% if messages %}
+  <div class="toast-wrapper" id="toastWrapper">
+    {% for message in messages %}
+      {% if message.tags == 'success' %}
+        <div class="toast toast-success" role="status" aria-live="polite">
+          <span class="toast-icon bi bi-check-circle-fill"></span> {{ message }}
+        </div>
+      {% elif message.tags == 'error' %}
+        <div class="toast toast-error" role="alert" aria-live="assertive">
+          <span class="toast-icon bi bi-exclamation-circle-fill"></span> {{ message }}
+        </div>
+      {% else %}
+        <div class="toast toast-info" role="status" aria-live="polite">
+          <span class="toast-icon bi bi-info-circle-fill"></span> {{ message }}
+        </div>
+      {% endif %}
+    {% endfor %}
+  </div>
+  {% endif %}
+
+  <!-- ======= Hero Section ======= -->
+<section id="hero">
+<br>
+<center>
+{% block content %}
+{% endblock content %}
+</center>
+</section>
+
+  <main id="main">
+
+
+
+  {% comment %} <!-- ======= Footer ======= -->
+  <footer id="footer">
+    <div class="footer-top">
+      <div class="container">
+        <div class="row">
+
+          <div class="col-lg-4 col-md-6">
+            <div class="footer-info">
+              <h3>Squadfree</h3>
+              <p class="pb-3"><em>Qui repudiandae et eum dolores alias sed ea. Qui suscipit veniam excepturi quod.</em></p>
+              <p>
+                A108 Adam Street <br>
+                NY 535022, USA<br><br>
+                <strong>Phone:</strong> +1 5589 55488 55<br>
+                <strong>Email:</strong> info@example.com<br>
+              </p>
+              <div class="social-links mt-3">
+                <a href="#" class="twitter"><i class="bx bxl-twitter"></i></a>
+                <a href="#" class="facebook"><i class="bx bxl-facebook"></i></a>
+                <a href="#" class="instagram"><i class="bx bxl-instagram"></i></a>
+                <a href="#" class="google-plus"><i class="bx bxl-skype"></i></a>
+                <a href="#" class="linkedin"><i class="bx bxl-linkedin"></i></a>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-lg-2 col-md-6 footer-links">
+            <h4>Useful Links</h4>
+            <ul>
+              <li><i class="bx bx-chevron-right"></i> <a href="#">Home</a></li>
+              <li><i class="bx bx-chevron-right"></i> <a href="#">About us</a></li>
+              <li><i class="bx bx-chevron-right"></i> <a href="#">Services</a></li>
+              <li><i class="bx bx-chevron-right"></i> <a href="#">Terms of service</a></li>
+              <li><i class="bx bx-chevron-right"></i> <a href="#">Privacy policy</a></li>
+            </ul>
+          </div>
+
+          <div class="col-lg-2 col-md-6 footer-links">
+            <h4>Our Services</h4>
+            <ul>
+              <li><i class="bx bx-chevron-right"></i> <a href="#">Web Design</a></li>
+              <li><i class="bx bx-chevron-right"></i> <a href="#">Web Development</a></li>
+              <li><i class="bx bx-chevron-right"></i> <a href="#">Product Management</a></li>
+              <li><i class="bx bx-chevron-right"></i> <a href="#">Marketing</a></li>
+              <li><i class="bx bx-chevron-right"></i> <a href="#">Graphic Design</a></li>
+            </ul>
+          </div>
+
+          <div class="col-lg-4 col-md-6 footer-newsletter">
+            <h4>Our Newsletter</h4>
+            <p>Tamen quem nulla quae legam multos aute sint culpa legam noster magna</p>
+            <form action="" method="post">
+              <input type="email" name="email"><input type="submit" value="Subscribe">
+            </form>
+
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+    <div class="container">
+      <div class="copyright">
+        &copy; Copyright <strong><span>Squadfree</span></strong>. All Rights Reserved
+      </div>
+      <div class="credits">
+        <!-- All the links in the footer should remain intact. -->
+        <!-- You can delete the links only if you purchased the pro version. -->
+        <!-- Licensing information: https://bootstrapmade.com/license/ -->
+        <!-- Purchase the pro version with working PHP/AJAX contact form: https://bootstrapmade.com/squadfree-free-bootstrap-template-creative/ -->
+        Designed by <a href="https://bootstrapmade.com/">BootstrapMade</a>
+      </div>
+    </div>
+  </footer><!-- End Footer --> {% endcomment %}
+
+  <a href="#" class="back-to-top d-flex align-items-center justify-content-center"><i class="bi bi-arrow-up-short"></i></a>
+
+  <!-- Vendor JS Files -->
+  <script src="{% static 'assets/vendor/purecounter/purecounter_vanilla.js' %}"></script>
+  <script src="{% static 'assets/vendor/aos/aos.js' %}"></script>
+  <script src="{% static 'assets/vendor/bootstrap/js/bootstrap.bundle.min.js' %}"></script>
+  <script src="{% static 'assets/vendor/glightbox/js/glightbox.min.js' %}"></script>
+  <script src="{% static 'assets/vendor/isotope-layout/isotope.pkgd.min.js' %}"></script>
+  <script src="{% static 'assets/vendor/swiper/swiper-bundle.min.js' %}"></script>
+  <script src="{% static 'assets/vendor/php-email-form/validate.js' %}"></script>
+
+  <!-- Template Main JS File -->
+  <script src="{% static 'assets/js/main.js' %}"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      var toasts = document.querySelectorAll('.toast');
+      if (!toasts.length) return;
+      toasts.forEach(function(toast, index) {
+        setTimeout(function() { toast.classList.add('show'); }, index * 150);
+        setTimeout(function() {
+          toast.classList.add('hide');
+          setTimeout(function() { toast.remove(); }, 350);
+        }, 4000 + index * 250);
+      });
+    });
+  </script>
+
+  {% if user.is_authenticated %}
+  <script>
+    (function() {
+      const sessionKey = 'iew-active-tab';
+      const channelName = 'iew-auth-tabs';
+      const alreadyInitialized = sessionStorage.getItem(sessionKey);
+      const isFreshLogin = new URLSearchParams(window.location.search).get('fresh') === '1';
+
+      try {
+        const channel = ('BroadcastChannel' in window) ? new BroadcastChannel(channelName) : null;
+        let anotherTabDetected = false;
+
+        if (channel) {
+          channel.onmessage = function(event) {
+            if (!event || !event.data) return;
+            if (event.data.type === 'PING') {
+              channel.postMessage({ type: 'PONG' });
+            }
+            if (event.data.type === 'PONG') {
+              anotherTabDetected = true;
+            }
+          };
+        }
+
+        if (isFreshLogin) {
+          sessionStorage.setItem(sessionKey, '1');
+          if (window.history && window.history.replaceState) {
+            const cleanUrl = window.location.pathname + window.location.hash;
+            window.history.replaceState({}, document.title, cleanUrl);
+          }
+          return;
+        }
+
+        if (!alreadyInitialized) {
+          if (channel) {
+            channel.postMessage({ type: 'PING' });
+          }
+
+          setTimeout(function() {
+            if (!anotherTabDetected) {
+              fetch("{% url 'browser_close_logout' %}", {
+                method: 'POST',
+                headers: {
+                  'X-CSRFToken': (document.cookie.match(/csrftoken=([^;]+)/) || [])[1] || '',
+                  'X-Requested-With': 'XMLHttpRequest'
+                },
+                credentials: 'same-origin'
+              }).finally(function() {
+                window.location.href = "{% url 'login_view' %}";
+              });
+              return;
+            }
+            sessionStorage.setItem(sessionKey, '1');
+          }, 300);
+          return;
+        }
+
+        sessionStorage.setItem(sessionKey, '1');
+      } catch (error) {
+        sessionStorage.setItem(sessionKey, '1');
+      }
+    })();
+  </script>
+  {% endif %}
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      if (!window.location.hash) return;
+      var target = document.querySelector(window.location.hash);
+      if (target) {
+        setTimeout(function() {
+          target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }, 50);
+      }
+    });
+  </script>
+
+</body>
+
+</html>

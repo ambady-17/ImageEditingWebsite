@@ -1,0 +1,240 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<style>
+/* Fix page layout and scrolling */
+html, body {
+  height: auto;
+  overflow-x: hidden;
+  overflow-y: auto;
+  scroll-behavior: smooth;
+}
+
+/* Remove any fixed positioning or overflow constraints */
+#contact-section {
+  position: relative;
+  overflow: visible;
+  height: auto;
+  min-height: 100vh;
+}
+
+/* Ensure sections have proper spacing */
+section {
+  min-height: auto;
+  height: auto;
+  overflow: visible;
+  position: relative;
+}
+
+/* Responsive design fixes */
+@media (max-width: 768px) {
+  #contact-section {
+    padding: 40px 20px !important;
+  }
+  
+  h1 {
+    font-size: 2rem !important;
+  }
+  
+  h2 {
+    font-size: 1.5rem !important;
+  }
+  
+  .contact-grid {
+    grid-template-columns: 1fr !important;
+    gap: 20px !important;
+  }
+  
+  .contact-card, .form-card {
+    padding: 24px !important;
+  }
+}
+
+@media (max-width: 480px) {
+  #contact-section {
+    padding: 30px 15px !important;
+  }
+  
+  h1 {
+    font-size: 1.8rem !important;
+  }
+  
+  .contact-card, .form-card {
+    padding: 20px !important;
+  }
+  
+  input, textarea {
+    padding: 12px 14px !important;
+  }
+}
+
+/* Smooth scrollbar styling */
+::-webkit-scrollbar {
+  width: 12px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f5f9;
+  border-radius: 6px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 6px;
+  transition: background 0.3s ease;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
+/* Firefox scrollbar */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: #cbd5e1 #f1f5f9;
+}
+
+/* Ensure content is visible and not cut off */
+.contact-grid {
+  width: 100%;
+  max-width: none;
+  margin: 0;
+  padding: 0;
+  overflow: visible;
+}
+
+/* Fix any potential z-index issues */
+section, div, form {
+  z-index: auto;
+}
+
+/* Form styling improvements */
+input, textarea {
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+input:focus, textarea:focus {
+  outline: none;
+  border-color: #2563eb;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+}
+
+button {
+  transition: all 0.3s ease;
+}
+
+button:hover {
+  background: #1d4ed8 !important;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+}
+
+/* Card hover effects */
+.contact-card:hover, .form-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+}
+
+/* Smooth transitions */
+* {
+  transition: color 0.3s ease, background-color 0.3s ease;
+}
+</style>
+
+<section id="contact-section" style="padding: 80px 20px; background: lightblue; scroll-margin-top: 90px;">
+  <div style="max-width: 1200px; margin: 0 auto;">
+    <!-- Header -->
+    <div style="text-align: center; margin-bottom: 60px;">
+      <h1 style="font-size: 3rem; font-weight: 700; margin-bottom: 12px; color: #1a202c; letter-spacing: -0.5px;">Get in Touch</h1>
+      <p style="font-size: 1.1rem; color: #718096; max-width: 600px; margin: 0 auto; line-height: 1.6;">Have questions or feedback? We'd love to hear from you. Our team is here to help and will respond within 24 hours.</p>
+    </div>
+
+    <div class="contact-grid" style="display: grid; grid-template-columns: repeat(auto-fit,minmax(340px,1fr)); gap: 40px; align-items: start;">
+      
+      <!-- Contact Info Card -->
+      <div class="contact-card" style="background: #ffffff; border-radius: 16px; padding: 40px; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08); border: 1px solid #e2e8f0; transition: all 0.3s ease;">
+        <h2 style="font-size: 1.5rem; font-weight: 600; margin-bottom: 30px; color: #1a202c;">Contact Information</h2>
+        
+        <!-- Email -->
+        <div style="margin-bottom: 28px; padding-bottom: 28px; border-bottom: 1px solid #e2e8f0;">
+          <div style="display: flex; align-items: flex-start; gap: 16px;">
+            <div style="width: 40px; height: 40px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 10px; display: flex; align-items: center; justify-content: center; color: white; font-size: 1.2rem; flex-shrink: 0;">✉</div>
+            <div>
+              <p style="font-weight: 600; color: #1a202c; margin: 0 0 4px 0;">Email Address</p>
+              <p style="color: #718096; margin: 0; font-size: 0.95rem;">athulkrishnakottayam2020@gmail.com</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Phone -->
+        <div style="margin-bottom: 28px; padding-bottom: 28px; border-bottom: 1px solid #e2e8f0;">
+          <div style="display: flex; align-items: flex-start; gap: 16px;">
+            <div style="width: 40px; height: 40px; background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); border-radius: 10px; display: flex; align-items: center; justify-content: center; color: white; font-size: 1.2rem; flex-shrink: 0;">☎</div>
+            <div>
+              <p style="font-weight: 600; color: #1a202c; margin: 0 0 4px 0;">Phone Number</p>
+              <p style="color: #718096; margin: 0; font-size: 0.95rem;">+91 8891468892</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Address -->
+        <div>
+          <div style="display: flex; align-items: flex-start; gap: 16px;">
+            <div style="width: 40px; height: 40px; background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); border-radius: 10px; display: flex; align-items: center; justify-content: center; color: white; font-size: 1.2rem; flex-shrink: 0;">📍</div>
+            <div>
+              <p style="font-weight: 600; color: #1a202c; margin: 0 0 4px 0;">Office Location</p>
+              <p style="color: #718096; margin: 0; font-size: 0.95rem;">Thr prime villa ,Kottayam,nattakom</p>
+            </div>
+          </div>
+        </div>
+
+        <div style="margin-top: 32px; padding-top: 28px; border-top: 1px solid #e2e8f0;">
+          <p style="color: #718096; font-size: 0.9rem; margin: 0;">We typically respond within 24 business hours.</p>
+        </div>
+      </div>
+
+      <!-- Contact Form Card -->
+      <div class="form-card" style="background: #ffffff; border-radius: 16px; padding: 40px; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08); border: 1px solid #e2e8f0;">
+        <h2 style="font-size: 1.5rem; font-weight: 600; margin-bottom: 28px; color: #1a202c;">Send us a Message</h2>
+        <form method="post" action="{% url 'contact_view' %}" style="display: grid; gap: 22px;">
+          {% csrf_token %}
+          
+          <!-- Name Field -->
+          <div>
+            <label for="txt_name" style="display: block; margin-bottom: 8px; font-weight: 600; color: #1a202c; font-size: 0.95rem;">Full Name <span style="color: #f56565;">*</span></label>
+            <input id="txt_name" name="name" type="text" value="{{ name|default:'' }}" required placeholder="John Doe" style="width: 100%; padding: 12px 16px; border: 1.5px solid #cbd5e0; border-radius: 10px; font-size: 0.95rem; background: #ffffff; transition: all 0.3s ease; box-sizing: border-box;" onFocus="this.style.borderColor='#667eea'; this.style.boxShadow='0 0 0 3px rgba(102, 126, 234, 0.1)'" onBlur="this.style.borderColor='#cbd5e0'; this.style.boxShadow='none'" />
+          </div>
+
+          <!-- Email Field -->
+          <div>
+            <label for="txt_email" style="display: block; margin-bottom: 8px; font-weight: 600; color: #1a202c; font-size: 0.95rem;">Email Address <span style="color: #f56565;">*</span></label>
+            <input id="txt_email" name="email" type="email" value="{{ email|default:'' }}" required placeholder="john@example.com" style="width: 100%; padding: 12px 16px; border: 1.5px solid #cbd5e0; border-radius: 10px; font-size: 0.95rem; background: #ffffff; transition: all 0.3s ease; box-sizing: border-box;" onFocus="this.style.borderColor='#667eea'; this.style.boxShadow='0 0 0 3px rgba(102, 126, 234, 0.1)'" onBlur="this.style.borderColor='#cbd5e0'; this.style.boxShadow='none'" />
+          </div>
+
+          <!-- Phone Field -->
+          <div>
+            <label for="txt_phone" style="display: block; margin-bottom: 8px; font-weight: 600; color: #1a202c; font-size: 0.95rem;">Phone Number <span style="color: #f56565;">*</span></label>
+            <input id="txt_phone" name="phone" type="text" value="{{ phone|default:'' }}" required placeholder="+1 (234) 567-890" style="width: 100%; padding: 12px 16px; border: 1.5px solid #cbd5e0; border-radius: 10px; font-size: 0.95rem; background: #ffffff; transition: all 0.3s ease; box-sizing: border-box;" onFocus="this.style.borderColor='#667eea'; this.style.boxShadow='0 0 0 3px rgba(102, 126, 234, 0.1)'" onBlur="this.style.borderColor='#cbd5e0'; this.style.boxShadow='none'" />
+          </div>
+
+          <!-- Subject Field -->
+          <div>
+            <label for="txt_subject" style="display: block; margin-bottom: 8px; font-weight: 600; color: #1a202c; font-size: 0.95rem;">Subject <span style="color: #f56565;">*</span></label>
+            <input id="txt_subject" name="subject" type="text" value="{{ subject|default:'' }}" required placeholder="How can we help?" style="width: 100%; padding: 12px 16px; border: 1.5px solid #cbd5e0; border-radius: 10px; font-size: 0.95rem; background: #ffffff; transition: all 0.3s ease; box-sizing: border-box;" onFocus="this.style.borderColor='#667eea'; this.style.boxShadow='0 0 0 3px rgba(102, 126, 234, 0.1)'" onBlur="this.style.borderColor='#cbd5e0'; this.style.boxShadow='none'" />
+          </div>
+
+          <!-- Message Field -->
+          <div>
+            <label for="txt_message" style="display: block; margin-bottom: 8px; font-weight: 600; color: #1a202c; font-size: 0.95rem;">Message <span style="color: #f56565;">*</span></label>
+            <textarea id="txt_message" name="message" rows="5" required placeholder="Tell us more about your inquiry..." style="width: 100%; padding: 12px 16px; border: 1.5px solid #cbd5e0; border-radius: 10px; font-size: 0.95rem; background: #ffffff; font-family: inherit; resize: vertical; transition: all 0.3s ease; box-sizing: border-box; min-height: 140px; line-height: 1.6;" onFocus="this.style.borderColor='#667eea'; this.style.boxShadow='0 0 0 3px rgba(102, 126, 234, 0.1)'" onBlur="this.style.borderColor='#cbd5e0'; this.style.boxShadow='none'">{{ message|default:'' }}</textarea>
+          </div>
+
+          <!-- Submit Button -->
+          <button type="submit" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 14px 28px; border: none; border-radius: 10px; font-size: 1rem; font-weight: 600; cursor: pointer; transition: all 0.3s ease; margin-top: 8px; box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);" onMouseEnter="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 6px 25px rgba(102, 126, 234, 0.4)'" onMouseLeave="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 15px rgba(102, 126, 234, 0.3)'">Send Message</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock content %}

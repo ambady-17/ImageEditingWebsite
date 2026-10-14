@@ -1,0 +1,47 @@
+{% extends 'admin_base.html' %}
+
+{% block page_title %}Settings{% endblock %}
+
+{% block content %}
+<section class="panel">
+  <div class="panel-header">
+    <h2>Admin Settings</h2>
+  </div>
+
+  <form method="post" enctype="multipart/form-data" style="display:grid; gap:14px; max-width:520px;">
+    {% csrf_token %}
+    <div>
+      <label for="site_name" class="form-label">Site Name</label>
+      <input id="site_name" name="site_name" class="form-control" value="{{ site_setting.site_name }}">
+    </div>
+    <div>
+      <label for="logo" class="form-label">Logo</label>
+      <input id="logo" name="logo" type="file" accept="image/*" class="form-control">
+      {% if site_setting.logo %}
+      <div style="margin-top:8px;">
+        <img src="{{ site_setting.logo.url }}" alt="Current logo" style="max-height:64px; width:auto;">
+      </div>
+      {% endif %}
+    </div>
+    <div>
+      <p class="text-muted mb-2">Current storage usage: <strong>{{ storage_usage }}</strong></p>
+    </div>
+    <div>
+      <button type="submit" class="btn btn-primary">Save Settings</button>
+    </div>
+  </form>
+
+  <div class="quick-actions" style="margin-top: 20px;">
+    <article class="quick-card">
+      <h3>Open Django Admin</h3>
+      <p>Manage users, groups, and models using Django admin.</p>
+      <a href="/admin/" class="btn btn-primary btn-sm">Go to Django Admin</a>
+    </article>
+    <article class="quick-card">
+      <h3>Back to Dashboard</h3>
+      <p>Return to overview metrics and recent activities.</p>
+      <a href="{% url 'admin_dashboard' %}" class="btn btn-primary btn-sm">Go to Dashboard</a>
+    </article>
+  </div>
+</section>
+{% endblock %}

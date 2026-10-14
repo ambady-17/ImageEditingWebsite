@@ -1,0 +1,816 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="editor-wrapper">
+  <div class="editor-shell">
+    <header class="editor-header">
+      <div>
+        <h1>Image Studio</h1>
+        <p>Distraction-free editor for quick adjustments, retouching and export.</p>
+      </div>
+      <div class="editor-actions">
+        <label class="btn" for="uploadInput">Choose file</label>
+        <input id="uploadInput" type="file" accept="image/*" style="display:none" />
+        <button id="downloadBtn" class="btn" disabled>Download</button>
+      </div>
+    </header>
+
+    <main class="editor-layout">
+      <aside class="editor-sidebar">
+        <div class="control-group">
+          <h3>Canvas</h3>
+          <button class="btn" id="undoBtn" disabled>Undo</button>
+          <button class="btn" id="resetBtn" disabled>Reset</button>
+          <button class="btn" id="clearBtn" disabled>Clear</button>
+        </div>
+
+        <div class="control-group">
+          <h3>Transform</h3>
+          <div class="inline-controls">
+            <button class="btn small" id="rotateLeft">⟲ 90°</button>
+            <button class="btn small" id="rotateRight">⟳ 90°</button>
+          </div>
+          <div class="inline-controls">
+            <button class="btn small" id="flipH">Flip H</button>
+            <button class="btn small" id="flipV">Flip V</button>
+          </div>
+          <div class="inline-controls">
+            <input id="resizeW" type="number" placeholder="W" min="1" />
+            <input id="resizeH" type="number" placeholder="H" min="1" />
+            <button class="btn small" id="resizeBtn">Resize</button>
+          </div>
+          <div class="inline-controls">
+            <input id="cropW" type="number" placeholder="crop W" min="1" />
+            <input id="cropH" type="number" placeholder="crop H" min="1" />
+            <button class="btn small" id="cropBtn">Crop center</button>
+          </div>
+        </div>
+
+        <div class="control-group">
+          <h3>Effects</h3>
+          <div class="range-control">
+            <label>Brightness: <span id="brightnessValue">1.00</span></label>
+            <input type="range" id="brightness" min="0.2" max="2" step="0.05" value="1" />
+          </div>
+          <div class="range-control">
+            <label>Contrast: <span id="contrastValue">1.00</span></label>
+            <input type="range" id="contrast" min="0.2" max="2" step="0.05" value="1" />
+          </div>
+          <div class="range-control">
+            <label>Saturation: <span id="saturationValue">1.00</span></label>
+            <input type="range" id="saturation" min="0" max="2" step="0.05" value="1" />
+          </div>
+          <div class="range-control">
+            <label>Blur: <span id="blurValue">0.00</span>px</label>
+            <input type="range" id="blur" min="0" max="8" step="0.5" value="0" />
+          </div>
+          <div class="range-control">
+            <label>Sharpness: <span id="sharpnessValue">0.00</span></label>
+            <input type="range" id="sharpness" min="0" max="8" step="0.5" value="0" />
+          </div>
+
+          <div class="inline-controls">
+            <button class="btn small" data-filter="none">Normal</button>
+            <button class="btn small" data-filter="grayscale(1)">Mono</button>
+            <button class="btn small" data-filter="sepia(0.55)">Sepia</button>
+            <button class="btn small" data-filter="contrast(1.25) saturate(1.2)">Punch</button>
+          </div>
+
+          <div class="inline-controls" style="margin-top: 10px;">
+            <button type="button" class="btn small server-effect-btn" data-url="{% url 'scaleup_fun' %}">Scale Up</button>
+            <button type="button" class="btn small server-effect-btn" data-url="{% url 'scaledown_fun' %}">Scale Down</button>
+            <button type="button" class="btn small server-effect-btn" data-url="{% url 'gray_fun' %}">Gray</button>
+            <button type="button" class="btn small server-effect-btn" data-url="{% url 'edge_fun' %}">Edge</button>
+            <button type="button" class="btn small server-effect-btn" data-url="{% url 'blur_fun' %}">Blur</button>
+            <button type="button" class="btn small server-effect-btn" data-url="{% url 'gaussian_fun' %}">Gaussian</button>
+            <button type="button" class="btn small server-effect-btn" data-url="{% url 'sharpen_fun' %}">Sharpen</button>
+            <button type="button" class="btn small server-effect-btn" data-url="{% url 'sepia_fun' %}">Sepia</button>
+            <button type="button" class="btn small server-effect-btn" data-url="{% url 'negative_fun' %}">Negative</button>
+          </div>
+        </div>
+
+      </aside>
+
+      <section class="workspace">
+        <div class="workspace-top">
+          <p id="status">Please upload an image to begin.</p>
+        </div>
+        <div class="canvas-wrap" id="canvasWrap">
+          <!-- Centered upload prompt (hidden once image loaded) -->
+          <label class="upload-prompt" id="uploadPrompt" for="uploadInput">
+            <div class="upload-prompt-icon">🖼️</div>
+            <div class="upload-prompt-title">Drop image here or click to upload</div>
+            <div class="upload-prompt-sub">Supports JPG, PNG, GIF, WEBP</div>
+            <span class="upload-prompt-btn">Choose File</span>
+          </label>
+          <canvas id="editorCanvas" style="display:none;"></canvas>
+        </div>
+      </section>
+    </main>
+  </div>
+</div>
+
+<script>
+  const uploadInput = document.getElementById('uploadInput');
+  const downloadBtn = document.getElementById('downloadBtn');
+  const resetBtn = document.getElementById('resetBtn');
+  const clearBtn = document.getElementById('clearBtn');
+  const undoBtn = document.getElementById('undoBtn');
+  const status = document.getElementById('status');
+  const uploadPrompt = document.getElementById('uploadPrompt');
+
+  const canvas = document.getElementById('editorCanvas');
+  const ctx = canvas.getContext('2d');
+
+  function showCanvas() {
+    uploadPrompt.style.display = 'none';
+    canvas.style.display = 'block';
+  }
+  function showPrompt() {
+    canvas.style.display = 'none';
+    uploadPrompt.style.display = 'flex';
+  }
+
+  const controls = {
+    brightness: document.getElementById('brightness'),
+    contrast: document.getElementById('contrast'),
+    saturation: document.getElementById('saturation'),
+    blur: document.getElementById('blur'),
+    sharpness: document.getElementById('sharpness')
+  };
+  const controlValueLabels = {
+    brightness: document.getElementById('brightnessValue'),
+    contrast: document.getElementById('contrastValue'),
+    saturation: document.getElementById('saturationValue'),
+    blur: document.getElementById('blurValue'),
+    sharpness: document.getElementById('sharpnessValue')
+  };
+
+  let baseImage = new Image();
+  let originalDataURL = null;
+  let rotation = 0;
+  let flipH = false;
+  let flipV = false;
+  let appliedFilter = 'none';
+
+  // Undo history
+  let historyStack = [];
+  let maxHistorySize = 20;
+
+  function updateStatus(text) {
+    status.textContent = text;
+  }
+
+  function withCacheBuster(url) {
+    if (!url) return '';
+    const separator = url.includes('?') ? '&' : '?';
+    return `${url}${separator}t=${Date.now()}`;
+  }
+
+  function applyServerImageToCanvas(imageUrl, statusText, retryCount = 0, maxRetries = 3) {
+    if (!imageUrl) return;
+    const previewUrl = withCacheBuster(imageUrl);
+    const nextImage = new Image();
+    nextImage.onload = () => {
+      baseImage = nextImage;
+      originalDataURL = previewUrl;
+      rotation = 0;
+      flipH = false;
+      flipV = false;
+      appliedFilter = 'none';
+      controls.brightness.value = 1;
+      controls.contrast.value = 1;
+      controls.saturation.value = 1;
+      controls.blur.value = 0;
+      controls.sharpness.value = 0;
+      updateSliderValueLabels();
+      enableControls(true);
+      showCanvas();
+      render();
+      updateStatus(statusText);
+    };
+    nextImage.onerror = () => {
+      if (retryCount < maxRetries) {
+        // Retry loading the image after a short delay
+        setTimeout(() => {
+          applyServerImageToCanvas(imageUrl, statusText, retryCount + 1, maxRetries);
+        }, 500 + (retryCount * 200)); // Exponential backoff
+      } else {
+        updateStatus('Effect applied but preview failed to refresh. Please try refreshing the page.');
+      }
+    };
+    nextImage.src = previewUrl;
+  }
+
+  function getCookie(name) {
+    const cookieString = document.cookie || '';
+    const cookies = cookieString.split(';');
+    for (let i = 0; i < cookies.length; i++) {
+      const cookie = cookies[i].trim();
+      if (cookie.startsWith(`${name}=`)) {
+        return decodeURIComponent(cookie.substring(name.length + 1));
+      }
+    }
+    return null;
+  }
+
+  async function syncImageToServer(file) {
+    const formData = new FormData();
+    formData.append('document', file);
+
+    const response = await fetch("{% url 'editor_upload_image' %}", {
+      method: 'POST',
+      headers: {
+        'X-Requested-With': 'XMLHttpRequest',
+        'X-CSRFToken': getCookie('csrftoken') || ''
+      },
+      body: formData,
+      credentials: 'same-origin'
+    });
+
+    const payload = await response.json();
+    
+    if (!response.ok || !payload.ok) {
+      const errorMsg = payload.error || 'Server upload failed';
+      console.error('Upload failed:', errorMsg);
+      throw new Error(errorMsg);
+    }
+
+    // Store the paths for server tools to use
+    window.serverImagePath = payload.path;
+    window.serverImagePathTemp = payload.path_temp;
+
+    console.log('Image synced to server for tools');
+  }
+
+  function enableControls(hasImage) {
+    [downloadBtn, undoBtn, resetBtn, clearBtn, document.getElementById('rotateLeft'), document.getElementById('rotateRight'), document.getElementById('flipH'), document.getElementById('flipV'), document.getElementById('resizeBtn'), document.getElementById('cropBtn')].forEach(b => b.disabled = !hasImage);
+    Object.values(controls).forEach(i => i.disabled = !hasImage);
+    document.querySelectorAll('[data-filter]').forEach(b => b.disabled = !hasImage);
+    updateUndoButton();
+  }
+
+  function updateSliderValueLabels() {
+    Object.keys(controls).forEach((key) => {
+      controlValueLabels[key].textContent = Number.parseFloat(controls[key].value).toFixed(2);
+    });
+  }
+
+  function getCanvasFilter() {
+    const parts = [
+      `brightness(${controls.brightness.value})`,
+      `contrast(${controls.contrast.value})`,
+      `saturate(${controls.saturation.value})`,
+      `blur(${controls.blur.value}px)`
+    ];
+    if (appliedFilter && appliedFilter !== 'none') {
+      parts.push(appliedFilter);
+    }
+    return parts.join(' ');
+  }
+
+  function clampColor(value) {
+    return Math.min(255, Math.max(0, value));
+  }
+
+  // Undo functionality
+  function saveState() {
+    const state = {
+      baseImageSrc: baseImage.src,
+      originalDataURL: originalDataURL,
+      rotation: rotation,
+      flipH: flipH,
+      flipV: flipV,
+      appliedFilter: appliedFilter,
+      brightness: controls.brightness.value,
+      contrast: controls.contrast.value,
+      saturation: controls.saturation.value,
+      blur: controls.blur.value,
+      sharpness: controls.sharpness.value
+    };
+    historyStack.push(state);
+    if (historyStack.length > maxHistorySize) {
+      historyStack.shift(); // Remove oldest state
+    }
+    updateUndoButton();
+  }
+
+  function restoreState(state) {
+    baseImage = new Image();
+    baseImage.onload = () => {
+      originalDataURL = state.originalDataURL;
+      rotation = state.rotation;
+      flipH = state.flipH;
+      flipV = state.flipV;
+      appliedFilter = state.appliedFilter;
+      controls.brightness.value = state.brightness;
+      controls.contrast.value = state.contrast;
+      controls.saturation.value = state.saturation;
+      controls.blur.value = state.blur;
+      controls.sharpness.value = state.sharpness;
+      updateSliderValueLabels();
+      render();
+      updateStatus('Undid last action');
+    };
+    baseImage.src = state.baseImageSrc;
+  }
+
+  function undo() {
+    if (historyStack.length === 0) return;
+    const previousState = historyStack.pop();
+    restoreState(previousState);
+    updateUndoButton();
+  }
+
+  function updateUndoButton() {
+    const undoBtn = document.getElementById('undoBtn');
+    undoBtn.disabled = historyStack.length === 0;
+  }
+
+  function render() {
+    if (!baseImage.src) return;
+
+    const width = baseImage.naturalWidth;
+    const height = baseImage.naturalHeight;
+
+    const angle = (rotation % 360 + 360) % 360;
+    const angleRad = angle * Math.PI / 180;
+
+    const rotatedWidth = Math.abs(Math.cos(angleRad) * width) + Math.abs(Math.sin(angleRad) * height);
+    const rotatedHeight = Math.abs(Math.sin(angleRad) * width) + Math.abs(Math.cos(angleRad) * height);
+
+    canvas.width = Math.round(rotatedWidth);
+    canvas.height = Math.round(rotatedHeight);
+
+    ctx.save();
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    ctx.filter = getCanvasFilter();
+
+    ctx.translate(canvas.width / 2, canvas.height / 2);
+    ctx.rotate(angleRad);
+    ctx.scale(flipH ? -1 : 1, flipV ? -1 : 1);
+    ctx.drawImage(baseImage, -width / 2, -height / 2, width, height);
+    ctx.restore();
+
+    if (controls.sharpness.value > 0) {
+      applySharpness(parseFloat(controls.sharpness.value));
+    }
+  }
+
+  function applySharpness(level) {
+    const amount = Math.max(0, Math.min(1, level / 8));
+    if (amount <= 0) return;
+
+    const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+    const data = imageData.data;
+    const w = canvas.width;
+    const h = canvas.height;
+    const copy = new Uint8ClampedArray(data);
+
+    const kernel = [
+      0, -1, 0,
+      -1, 5, -1,
+      0, -1, 0
+    ];
+
+    const kSize = 3;
+    const half = 1;
+
+    for (let y = 0; y < h; y++) {
+      for (let x = 0; x < w; x++) {
+        let r = 0, g = 0, b = 0;
+
+        for (let ky = -half; ky <= half; ky++) {
+          for (let kx = -half; kx <= half; kx++) {
+            const px = Math.min(w - 1, Math.max(0, x + kx));
+            const py = Math.min(h - 1, Math.max(0, y + ky));
+            const idx = (py * w + px) * 4;
+            const k = kernel[(ky + half) * kSize + (kx + half)];
+            r += copy[idx] * k;
+            g += copy[idx + 1] * k;
+            b += copy[idx + 2] * k;
+          }
+        }
+
+        const i = (y * w + x) * 4;
+        data[i] = clampColor(copy[i] + amount * (r - copy[i]));
+        data[i + 1] = clampColor(copy[i + 1] + amount * (g - copy[i + 1]));
+        data[i + 2] = clampColor(copy[i + 2] + amount * (b - copy[i + 2]));
+      }
+    }
+
+    ctx.putImageData(imageData, 0, 0);
+  }
+
+  function commit() {
+    originalDataURL = canvas.toDataURL('image/png');
+    baseImage.src = originalDataURL;
+    rotation = 0;
+    flipH = flipV = false;
+    appliedFilter = 'none';
+    controls.brightness.value = 1;
+    controls.contrast.value = 1;
+    controls.saturation.value = 1;
+    controls.blur.value = 0;
+    controls.sharpness.value = 0;
+    historyStack = []; // Clear history when committing
+    updateUndoButton();
+    updateStatus('Edit applied. Continue adjusting or download.');
+  }
+
+  uploadInput.addEventListener('change', (event) => {
+    const file = event.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = () => {
+      baseImage.onload = () => {
+        originalDataURL = reader.result;
+        rotation = 0;
+        flipH = false;
+        flipV = false;
+        appliedFilter = 'none';
+        controls.brightness.value = 1;
+        controls.contrast.value = 1;
+        controls.saturation.value = 1;
+        controls.blur.value = 0;
+        controls.sharpness.value = 0;
+        historyStack = []; // Clear history for new image
+        updateSliderValueLabels();
+        enableControls(true);
+        showCanvas();
+        render();
+        updateStatus('Image loaded. Use toolbar for editing.');
+      };
+      baseImage.src = reader.result;
+    };
+    reader.readAsDataURL(file);
+
+    syncImageToServer(file)
+      .then(() => {
+        updateStatus('Image and server tools ready.');
+      })
+      .catch((error) => {
+        console.error('Server sync error:', error);
+        updateStatus('Image loaded locally. Server tools: ' + error.message);
+      });
+  });
+
+  document.getElementById('rotateLeft').addEventListener('click', () => { saveState(); rotation -= 90; render(); updateStatus('Rotated left'); });
+  document.getElementById('rotateRight').addEventListener('click', () => { saveState(); rotation += 90; render(); updateStatus('Rotated right'); });
+  document.getElementById('flipH').addEventListener('click', () => { saveState(); flipH = !flipH; render(); updateStatus('Flipped horizontally'); });
+  document.getElementById('flipV').addEventListener('click', () => { saveState(); flipV = !flipV; render(); updateStatus('Flipped vertically'); });
+
+  document.getElementById('resizeBtn').addEventListener('click', () => {
+    const w = parseInt(document.getElementById('resizeW').value, 10);
+    const h = parseInt(document.getElementById('resizeH').value, 10);
+    if (!w || !h) return updateStatus('Enter width and height to resize.');
+    saveState();
+    const tmp = document.createElement('canvas');
+    tmp.width = w;
+    tmp.height = h;
+    tmp.getContext('2d').drawImage(canvas, 0, 0, w, h);
+    baseImage = new Image();
+    baseImage.onload = () => { render(); updateStatus(`Resized to ${w}×${h}`); };
+    baseImage.src = tmp.toDataURL('image/png');
+    originalDataURL = baseImage.src;
+  });
+
+  document.getElementById('cropBtn').addEventListener('click', () => {
+    const cropW = parseInt(document.getElementById('cropW').value, 10);
+    const cropH = parseInt(document.getElementById('cropH').value, 10);
+    if (!cropW || !cropH) return updateStatus('Enter crop width and height.');
+    saveState();
+    const x = Math.max(0, Math.round((canvas.width - cropW) / 2));
+    const y = Math.max(0, Math.round((canvas.height - cropH) / 2));
+    const c = document.createElement('canvas');
+    c.width = cropW;
+    c.height = cropH;
+    c.getContext('2d').drawImage(canvas, x, y, cropW, cropH, 0, 0, cropW, cropH);
+    baseImage = new Image();
+    baseImage.onload = () => { render(); updateStatus(`Cropped to ${cropW}×${cropH}`); };
+    baseImage.src = c.toDataURL('image/png');
+    originalDataURL = baseImage.src;
+  });
+
+  Object.values(controls).forEach(input => {
+    input.addEventListener('input', () => {
+      if (!baseImage.src) return;
+      updateSliderValueLabels();
+      render();
+      updateStatus(`Effects updated - ${canvas.width}x${canvas.height}`);
+    });
+    input.addEventListener('change', () => {
+      if (!baseImage.src) return;
+      saveState();
+    });
+  });
+
+  document.querySelectorAll('[data-filter]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      saveState();
+      appliedFilter = btn.getAttribute('data-filter');
+      render();
+      updateStatus('Filter updated.');
+    });
+  });
+
+  document.querySelectorAll('.server-effect-btn').forEach((btn) => {
+    btn.addEventListener('click', async () => {
+      const actionUrl = btn.getAttribute('data-url');
+      if (!actionUrl) return;
+
+      // Save current state before applying server effect
+      saveState();
+
+      btn.disabled = true;
+      updateStatus('Applying effect...');
+      try {
+        const response = await fetch(actionUrl, {
+          method: 'GET',
+          headers: { 'X-Requested-With': 'XMLHttpRequest' },
+          credentials: 'same-origin'
+        });
+        if (!response.ok) throw new Error('Request failed');
+
+        const payload = await response.json();
+        if (!payload.action_done) {
+          updateStatus('Please upload an image first, then try this effect.');
+          return;
+        }
+
+        const updatedImagePath = payload.path_temp || payload.path;
+        applyServerImageToCanvas(updatedImagePath, 'Effect applied successfully.');
+      } catch (error) {
+        updateStatus('Could not apply effect. Please try again.');
+      } finally {
+        btn.disabled = false;
+      }
+    });
+  });
+
+  undoBtn.addEventListener('click', undo);
+
+  resetBtn.addEventListener('click', () => {
+    if (!originalDataURL) return;
+    saveState();
+    baseImage = new Image();
+    baseImage.onload = () => { rotation = 0; flipH = false; flipV = false; appliedFilter = 'none'; controls.brightness.value = 1; controls.contrast.value = 1; controls.saturation.value = 1; controls.blur.value = 0; controls.sharpness.value = 0; updateSliderValueLabels(); render(); updateStatus('Reset to original image'); };
+    baseImage.src = originalDataURL;
+  });
+
+  clearBtn.addEventListener('click', () => {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    baseImage.src = '';
+    originalDataURL = null;
+    rotation = 0;
+    flipH = false;
+    flipV = false;
+    appliedFilter = 'none';
+    historyStack = []; // Clear history when clearing
+    enableControls(false);
+    showPrompt();
+    updateStatus('Canvas cleared. Upload a new file.');
+  });
+
+  downloadBtn.addEventListener('click', () => {
+    const link = document.createElement('a');
+    link.href = canvas.toDataURL('image/png');
+    link.download = 'edited-image.png';
+    link.click();
+    updateStatus('Download started');
+  });
+
+  uploadInput.addEventListener('change', () => {
+    downloadBtn.disabled = false;
+  });
+
+  // Keyboard shortcuts
+  document.addEventListener('keydown', (event) => {
+    if (event.ctrlKey || event.metaKey) { // Ctrl on Windows/Linux, Cmd on Mac
+      if (event.key === 'z' && !event.shiftKey) { // Ctrl+Z (undo)
+        event.preventDefault();
+        undo();
+      }
+    }
+  });
+
+  enableControls(false);
+  updateSliderValueLabels();
+  showPrompt(); // start with prompt visible
+</script>
+
+<style>
+  /* ── Reset & Neutralize base.html wrappers ── */
+  html, body { height: 100%; overflow: hidden; }
+
+  section#hero,
+  section#hero > center {
+    all: unset;
+    display: block;
+  }
+
+  /* ── Full-viewport editor wrapper (sits below 70px navbar) ── */
+  .editor-wrapper {
+    position: fixed;
+    top: 70px;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(rgba(255,255,255,0.82), rgba(255,255,255,0.82)),
+                url('{{ editor_bg }}') center/cover no-repeat;
+    display: flex;
+    flex-direction: column;
+    padding: 12px;
+    box-sizing: border-box;
+    overflow: hidden;
+  }
+
+  /* ── Shell: fills the wrapper ── */
+  .editor-shell {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    max-width: 1260px;
+    width: 100%;
+    margin: 0 auto;
+    border-radius: 14px;
+    background: #ffffffee;
+    box-shadow: 0 16px 44px rgba(0,0,0,0.15);
+    overflow: hidden;
+    min-height: 0;   /* crucial for flex children to shrink */
+  }
+
+  /* ── Header ── */
+  .editor-header {
+    flex-shrink: 0;
+    padding: 14px 18px;
+    border-bottom: 1px solid #e5e7eb;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+  }
+  .editor-header h1 { margin: 0; font-size: 1.3rem; color: #1f2937; }
+  .editor-header p  { margin: 3px 0 0; color: #4b5563; font-size: 0.88rem; }
+  .editor-actions   { display: flex; gap: 8px; align-items: center; flex-shrink: 0; }
+
+  /* ── Main layout: sidebar + workspace ── */
+  .editor-layout {
+    flex: 1;
+    display: grid;
+    grid-template-columns: 280px 1fr;
+    min-height: 0;   /* allows flex children to shrink below content size */
+    overflow: hidden;
+  }
+
+  /* ── Sidebar scrolls on its own ── */
+  .editor-sidebar {
+    border-right: 1px solid #e5e7eb;
+    padding: 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    overflow-y: auto;
+    overflow-x: hidden;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(59,130,246,0.4) transparent;
+  }
+  .editor-sidebar::-webkit-scrollbar        { width: 5px; }
+  .editor-sidebar::-webkit-scrollbar-track  { background: transparent; }
+  .editor-sidebar::-webkit-scrollbar-thumb  { background: rgba(59,130,246,0.4); border-radius: 8px; }
+
+  /* ── Workspace scrolls on its own ── */
+  .workspace {
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    overflow-y: auto;
+    overflow-x: hidden;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(59,130,246,0.4) transparent;
+  }
+  .workspace::-webkit-scrollbar        { width: 5px; }
+  .workspace::-webkit-scrollbar-track  { background: transparent; }
+  .workspace::-webkit-scrollbar-thumb  { background: rgba(59,130,246,0.4); border-radius: 8px; }
+
+  .workspace-top p { margin: 0; font-size: 0.88rem; color: #334155; }
+
+  /* ── Canvas area ── */
+  .canvas-wrap {
+    flex: 1;
+    border: 2px dashed #cbd5e1;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #f8fafc;
+    overflow: auto;
+    min-height: 200px;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(59,130,246,0.4) transparent;
+  }
+  .canvas-wrap::-webkit-scrollbar        { width: 5px; height: 5px; }
+  .canvas-wrap::-webkit-scrollbar-track  { background: transparent; }
+  .canvas-wrap::-webkit-scrollbar-thumb  { background: rgba(59,130,246,0.4); border-radius: 8px; }
+
+  #editorCanvas {
+    max-width: 100%;
+    max-height: 100%;
+    border-radius: 10px;
+    box-shadow: 0 8px 24px rgba(15,23,42,0.12);
+  }
+
+  /* ── Buttons ── */
+  .btn {
+    background: #3b82f6;
+    color: white;
+    border: 0;
+    border-radius: 8px;
+    padding: 7px 12px;
+    font-size: 0.87rem;
+    cursor: pointer;
+    text-decoration: none;
+    display: inline-block;
+    transition: transform .14s ease, box-shadow .2s ease;
+  }
+  .btn:hover:not(:disabled) { transform: translateY(-1px); box-shadow: 0 8px 18px rgba(59,130,246,0.32); }
+  .btn:disabled { background: #94a3b8; cursor: not-allowed; }
+  .btn.small { padding: 5px 8px; font-size: 0.8rem; }
+  .btn.primary { background: #2563eb; }
+
+  /* ── Sidebar control groups ── */
+  .control-group { background: #f8fafc; border: 1px solid #e5e7eb; border-radius: 10px; padding: 10px 12px; }
+  .control-group h3 { margin: 0 0 8px; font-size: 0.95rem; color: #334155; }
+  .inline-controls { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
+  .range-control { margin: 8px 0; }
+  .range-control label { font-size: 0.8rem; color: #475569; display: block; margin-bottom: 3px; }
+  .range-control input { width: 100%; }
+
+  /* ── Responsive ── */
+  @media (max-width: 900px) {
+    .editor-layout { grid-template-columns: 1fr; }
+    .editor-sidebar { order: 2; border-right: none; border-top: 1px solid #e5e7eb; max-height: 40vh; }
+    .workspace { order: 1; }
+  }
+  @media (max-width: 600px) {
+    .editor-header, .editor-actions { flex-direction: column; align-items: flex-start; }
+    .editor-header { padding: 10px 14px; }
+  }
+
+  /* ── Upload prompt (centered in canvas area) ── */
+  .upload-prompt {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    width: 100%;
+    height: 100%;
+    min-height: 260px;
+    cursor: pointer;
+    text-align: center;
+    padding: 32px;
+    transition: background 0.2s;
+    border-radius: 10px;
+    user-select: none;
+  }
+  .upload-prompt:hover {
+    background: rgba(59,130,246,0.04);
+  }
+  .upload-prompt-icon {
+    font-size: 3.5rem;
+    line-height: 1;
+    filter: drop-shadow(0 4px 8px rgba(59,130,246,0.2));
+  }
+  .upload-prompt-title {
+    font-size: 1.05rem;
+    font-weight: 600;
+    color: #334155;
+  }
+  .upload-prompt-sub {
+    font-size: 0.82rem;
+    color: #94a3b8;
+    margin-top: -4px;
+  }
+  .upload-prompt-btn {
+    margin-top: 8px;
+    background: #3b82f6;
+    color: white;
+    padding: 9px 28px;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    transition: background 0.2s, transform 0.15s;
+    display: inline-block;
+  }
+  .upload-prompt:hover .upload-prompt-btn {
+    background: #2563eb;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(37,99,235,0.25);
+  }
+</style>
+
+{% endblock content %}

@@ -1,0 +1,262 @@
+:root {
+  --admin-bg: #f8fafc;
+  --surface: #ffffff;
+  --surface-soft: #e2e8f0;
+  --text-primary: #0f172a;
+  --text-secondary: #475569;
+  --primary: #3b82f6;
+  --primary-soft: #eff6ff;
+  --accent: #2563eb;
+  --border: #cbd5e1;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body.admin-body {
+  margin: 0;
+  font-family: 'Open Sans', sans-serif;
+  background: var(--admin-bg);
+  color: var(--text-primary);
+}
+
+.admin-shell {
+  display: flex;
+  min-height: 100vh;
+}
+
+.admin-sidebar {
+  width: 280px;
+  background: #0f172a;
+  color: #e2e8f0;
+  display: flex;
+  flex-direction: column;
+  padding: 32px 24px;
+}
+
+.admin-brand {
+  margin-bottom: 32px;
+}
+
+.admin-brand a {
+  color: var(--primary);
+  font-size: 1.45rem;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.admin-nav {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.admin-nav-link {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  border-radius: 12px;
+  color: #cbd5e1;
+  text-decoration: none;
+  font-weight: 500;
+  transition: background 0.25s ease, color 0.25s ease;
+}
+
+.admin-nav-link:hover,
+.admin-nav-link.active {
+  background: rgba(59, 130, 246, 0.14);
+  color: #f8fafc;
+}
+
+.admin-sidebar-foot {
+  margin-top: auto;
+}
+
+.logout-link {
+  border-top: 1px solid rgba(226, 232, 240, 0.26);
+  padding-top: 20px;
+}
+
+.admin-main {
+  flex: 1;
+  padding: 32px 40px;
+}
+
+.admin-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.admin-header h1 {
+  margin: 0;
+  font-size: 2rem;
+}
+
+.admin-subtitle {
+  margin: 8px 0 0;
+  color: var(--text-secondary);
+}
+
+.admin-header-actions .btn {
+  min-width: 130px;
+}
+
+.admin-content {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.admin-toast-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 24px;
+}
+
+.admin-toast {
+  padding: 14px 18px;
+  border-radius: 12px;
+  box-shadow: 0 10px 30px rgba(15, 23, 42, 0.08);
+  background: var(--surface);
+  color: var(--text-primary);
+}
+
+.admin-toast-success {
+  border-left: 4px solid #10b981;
+}
+
+.dashboard-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 20px;
+}
+
+.stat-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  padding: 24px;
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  min-height: 150px;
+}
+
+.stat-card-icon {
+  width: 60px;
+  height: 60px;
+  display: grid;
+  place-items: center;
+  border-radius: 18px;
+  background: var(--primary-soft);
+  color: var(--primary);
+  font-size: 1.55rem;
+}
+
+.stat-label {
+  margin: 0 0 8px;
+  color: var(--text-secondary);
+  font-size: 0.95rem;
+}
+
+.stat-card h3 {
+  margin: 0;
+  font-size: 2rem;
+}
+
+.panel {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  padding: 24px;
+}
+
+.panel-header {
+  margin-bottom: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.panel-header h2 {
+  margin: 0;
+  font-size: 1.25rem;
+}
+
+.panel p {
+  margin: 0;
+  color: var(--text-secondary);
+}
+
+.table-responsive {
+  overflow-x: auto;
+}
+
+.table thead th {
+  border-bottom: 2px solid var(--border);
+}
+
+.table tbody tr:hover {
+  background: #f8fafc;
+}
+
+.table td,
+.table th {
+  vertical-align: middle;
+}
+
+.table img {
+  border-radius: 12px;
+}
+
+.quick-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+.quick-card {
+  flex: 1 1 240px;
+  background: var(--primary-soft);
+  border-radius: 18px;
+  padding: 22px;
+  min-height: 132px;
+}
+
+.quick-card h3 {
+  margin-top: 0;
+}
+
+.quick-card p {
+  margin-bottom: 16px;
+  color: var(--text-secondary);
+}
+
+@media (max-width: 1100px) {
+  .dashboard-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 760px) {
+  .admin-shell {
+    flex-direction: column;
+  }
+  .admin-sidebar {
+    width: 100%;
+    padding: 22px 18px;
+  }
+  .admin-main {
+    padding: 24px 18px;
+  }
+  .dashboard-grid {
+    grid-template-columns: 1fr;
+  }
+}

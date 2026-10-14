@@ -1,0 +1,289 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<style>
+  /* Fix page layout */
+  html, body {
+    height: auto;
+    overflow-x: hidden;
+    overflow-y: auto;
+    scroll-behavior: smooth;
+  }
+  section#hero,
+  section#hero > center {
+    all: unset;
+    display: block;
+  }
+
+  .messages-page {
+    min-height: calc(100vh - 70px);
+    padding: 100px 20px 60px;
+    background: linear-gradient(135deg, #f0f4ff 0%, #faf5ff 50%, #f0fdf4 100%);
+  }
+
+  .messages-container {
+    max-width: 900px;
+    margin: 0 auto;
+  }
+
+  .messages-header {
+    text-align: center;
+    margin-bottom: 40px;
+  }
+  .messages-header h1 {
+    font-size: 2.2rem;
+    font-weight: 700;
+    color: #1a202c;
+    margin: 0 0 8px;
+    letter-spacing: -0.5px;
+  }
+  .messages-header p {
+    color: #718096;
+    font-size: 1.05rem;
+    margin: 0;
+  }
+
+  /* Message Card */
+  .msg-card {
+    background: #fff;
+    border: 1px solid #e2e8f0;
+    border-radius: 16px;
+    margin-bottom: 20px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+    overflow: hidden;
+    transition: transform 0.2s ease, box-shadow 0.25s ease;
+  }
+  .msg-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
+  }
+
+  .msg-card-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 18px 24px;
+    border-bottom: 1px solid #f1f5f9;
+    background: linear-gradient(135deg, #fafbff 0%, #f8f4ff 100%);
+  }
+  .msg-subject {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #1e293b;
+    margin: 0;
+  }
+  .msg-date {
+    font-size: 0.82rem;
+    color: #94a3b8;
+    white-space: nowrap;
+  }
+
+  .msg-card-body {
+    padding: 18px 24px;
+  }
+  .msg-text {
+    color: #475569;
+    font-size: 0.95rem;
+    line-height: 1.65;
+    margin: 0;
+  }
+
+  /* Status badge */
+  .msg-status {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 3px 10px;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    margin-left: 10px;
+  }
+  .msg-status-replied {
+    background: #dcfce7;
+    color: #16a34a;
+  }
+  .msg-status-pending {
+    background: #fef3c7;
+    color: #d97706;
+  }
+
+  /* Replies section */
+  .msg-replies {
+    border-top: 1px solid #f1f5f9;
+    padding: 0;
+  }
+  .msg-replies-title {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 14px 24px 8px;
+    font-size: 0.88rem;
+    font-weight: 600;
+    color: #4338ca;
+  }
+  .msg-replies-title i {
+    font-size: 1.1rem;
+  }
+
+  .reply-card {
+    margin: 0 24px 12px;
+    background: linear-gradient(135deg, #f0f4ff 0%, #faf5ff 100%);
+    border: 1px solid #e8e0f0;
+    border-radius: 12px;
+    padding: 14px 18px;
+    position: relative;
+    transition: box-shadow 0.2s ease;
+  }
+  .reply-card:hover {
+    box-shadow: 0 2px 12px rgba(102, 126, 234, 0.1);
+  }
+  .reply-card::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 12px;
+    bottom: 12px;
+    width: 3px;
+    border-radius: 3px;
+    background: linear-gradient(180deg, #667eea, #764ba2);
+  }
+
+  .reply-meta {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 6px;
+  }
+  .reply-admin-name {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: #4338ca;
+  }
+  .reply-admin-name i {
+    font-size: 0.95rem;
+  }
+  .reply-timestamp {
+    font-size: 0.78rem;
+    color: #94a3b8;
+  }
+  .reply-text {
+    color: #334155;
+    font-size: 0.92rem;
+    line-height: 1.6;
+    margin: 0;
+  }
+
+  /* Empty state */
+  .empty-state {
+    text-align: center;
+    padding: 60px 20px;
+    background: #fff;
+    border-radius: 16px;
+    border: 1px solid #e2e8f0;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.04);
+  }
+  .empty-state-icon {
+    font-size: 3.5rem;
+    margin-bottom: 12px;
+    filter: drop-shadow(0 4px 8px rgba(102,126,234,0.2));
+  }
+  .empty-state h3 {
+    color: #334155;
+    font-size: 1.3rem;
+    margin: 0 0 8px;
+  }
+  .empty-state p {
+    color: #94a3b8;
+    margin: 0 0 20px;
+    font-size: 0.95rem;
+  }
+  .empty-state a {
+    display: inline-block;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: #fff;
+    padding: 10px 24px;
+    border-radius: 10px;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 0.95rem;
+    transition: transform 0.18s ease, box-shadow 0.25s ease;
+  }
+  .empty-state a:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(102, 126, 234, 0.35);
+  }
+
+  /* Responsive */
+  @media (max-width: 600px) {
+    .messages-page { padding: 90px 12px 40px; }
+    .messages-header h1 { font-size: 1.6rem; }
+    .msg-card-header { flex-direction: column; gap: 6px; align-items: flex-start; }
+    .msg-card-header, .msg-card-body { padding: 14px 16px; }
+    .reply-card { margin: 0 16px 10px; }
+  }
+</style>
+
+<div class="messages-page">
+  <div class="messages-container">
+    <div class="messages-header">
+      <h1>📬 My Messages</h1>
+      <p>View your contact messages and admin replies</p>
+    </div>
+
+    {% if user_contact_messages %}
+      {% for msg in user_contact_messages %}
+      <div class="msg-card">
+        <div class="msg-card-header">
+          <div style="display: flex; align-items: center;">
+            <h3 class="msg-subject">{{ msg.subject }}</h3>
+            {% if msg.replies.all %}
+              <span class="msg-status msg-status-replied">✓ Replied</span>
+            {% else %}
+              <span class="msg-status msg-status-pending">⏳ Pending</span>
+            {% endif %}
+          </div>
+          <span class="msg-date">{{ msg.created_at|date:'M d, Y \a\t H:i' }}</span>
+        </div>
+
+        <div class="msg-card-body">
+          <p class="msg-text">{{ msg.message|linebreaksbr }}</p>
+        </div>
+
+        {% if msg.replies.all %}
+        <div class="msg-replies">
+          <div class="msg-replies-title">
+            <i class='bx bxs-message-check'></i>
+            Admin Repl{{ msg.replies.count|pluralize:"y,ies" }} ({{ msg.replies.count }})
+          </div>
+          {% for reply in msg.replies.all %}
+          <div class="reply-card">
+            <div class="reply-meta">
+              <span class="reply-admin-name">
+                <i class='bx bxs-shield-alt-2'></i>
+                {{ reply.admin_user.username|default:"Admin" }}
+              </span>
+              <span class="reply-timestamp">{{ reply.created_at|date:'M d, Y H:i' }}</span>
+            </div>
+            <p class="reply-text">{{ reply.body|linebreaksbr }}</p>
+          </div>
+          {% endfor %}
+        </div>
+        {% endif %}
+      </div>
+      {% endfor %}
+    {% else %}
+      <div class="empty-state">
+        <div class="empty-state-icon">📭</div>
+        <h3>No messages yet</h3>
+        <p>When you send us a message through the contact page, it will appear here along with our replies.</p>
+        <a href="{% url 'contact_view' %}">Send a Message</a>
+      </div>
+    {% endif %}
+  </div>
+</div>
+
+{% endblock content %}

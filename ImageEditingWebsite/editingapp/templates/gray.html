@@ -1,0 +1,51 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<style>
+  .page-panel { max-width: 1060px; margin: 80px auto 36px; background: rgba(255,255,255,0.96); border: 1px solid #e2e8f0; border-radius: 14px; box-shadow: 0 14px 34px rgba(15,23,42,0.14); padding: 18px; }
+  .panel-row { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 14px; }
+  .tool-link { display: inline-block; text-decoration: none; padding: 8px 11px; border-radius: 8px; border: 1px solid #cbd5e1; font-size: 0.88rem; color: #1f2937; background: #fff; transition: all .15s ease; }
+  .tool-link:hover { background: #f1f5f9; border-color: #94a3b8; }
+  .tool-link.primary { background: #3b82f6; color: #fff; border-color: #3b82f6; }
+  .preview-box { border: 1px solid #cbd5e1; border-radius: 10px; overflow: hidden; background: #f8fafc; min-height: 150px; display: grid; place-items: center; }
+  .preview-box img { max-width: 48%; max-height: 360px; object-fit: contain; border-radius: 8px; }
+  @media (max-width: 880px) { .preview-box img { max-width: 90%; } }
+</style>
+
+<div class="page-panel">
+  <h2 style="margin-top:0; color:#1f2937;">Grayscale tool</h2>
+  <div class="panel-row">
+    <a class="tool-link primary" href="{% url 'gray_fun' %}">Gray Scale</a>
+    <a class="tool-link" href="{% url 'edge_fun' %}">Edge</a>
+    <a class="tool-link" href="{% url 'crop_html' %}">Crop</a>
+    <a class="tool-link" href="{% url 'filter_fun' %}">Filter</a>
+    <a class="tool-link" href="{% url 'brightp_fun' %}">Brightness +</a>
+    <a class="tool-link" href="{% url 'brightn_fun' %}">Brightness -</a>
+    <a class="tool-link" href="{% url 'scaleup_fun' %}">Scale Up</a>
+    <a class="tool-link" href="{% url 'scaledown_fun' %}">Scale Down</a>
+    <a class="tool-link" href="{% url 'blur_fun' %}">Blur</a>
+    <a class="tool-link" href="{% url 'gaussian_fun' %}">Gaussian</a>
+    <a class="tool-link" href="{% url 'sharpen_fun' %}">Sharpen</a>
+    <a class="tool-link" href="{% url 'sepia_fun' %}">Sepia</a>
+    <a class="tool-link" href="{% url 'negative_fun' %}">Negative</a>
+  </div>
+
+  <div class="preview-box">
+    {% if path %}
+      <img src="{{ path }}" alt="Original" />
+      <img src="{{ loc_temp }}" alt="Edited" />
+    {% else %}
+      <span style="color:#64748b;">Upload an image first in editor to preview.</span>
+    {% endif %}
+  </div>
+
+  <div class="panel-row" style="margin-top: 12px;">
+    <a class="tool-link primary" href="{% url 'change_fun' %}">Apply Changes</a>
+    <a class="tool-link" href="{{ path }}" download="original.png">Download Original</a>
+    {% if loc_temp %}
+      <a class="tool-link" href="{{ loc_temp }}" download="edited.png">Download Edited</a>
+    {% endif %}
+  </div>
+</div>
+
+{% endblock content %}

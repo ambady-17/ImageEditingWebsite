@@ -1,0 +1,72 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<style>
+  .page-panel { max-width: 1060px; margin: 80px auto 36px; background: rgba(255,255,255,0.96); border: 1px solid #e2e8f0; border-radius: 14px; box-shadow: 0 14px 34px rgba(15,23,42,0.14); padding: 18px; }
+  .panel-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  .panel-block { background: #fff; border: 1px solid #cbd5e1; border-radius: 10px; padding: 14px; }
+  .panel-row { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
+  .tool-link { display: inline-block; text-decoration: none; padding: 7px 10px; border-radius: 8px; border: 1px solid #cbd5e1; font-size: 0.88rem; color: #1f2937; background: #fff; transition: all .15s ease; }
+  .tool-link:hover { background: #f1f5f9; border-color: #94a3b8; }
+  .tool-link.primary { background: #3b82f6; color: #fff; border-color: #3b82f6; }
+  .preview-box { border: 1px solid #cbd5e1; border-radius: 10px; padding: 10px; background: #f8fafc; display: grid; gap: 8px; justify-items: center; }
+  .preview-box img { max-width: 100%; max-height: 380px; object-fit: contain; border-radius: 8px; }
+  .control-row { gap: 8px; align-items: center; flex-wrap: wrap; }
+  .input-short { width: 86px; padding: 7px 8px; border: 1px solid #cbd5e1; border-radius: 8px; }
+  @media (max-width: 980px) { .panel-grid { grid-template-columns: 1fr; } }
+</style>
+
+<div class="page-panel">
+  <div class="panel-grid">
+    <section class="panel-block">
+      <h2 style="margin-top:0; color:#1f2937;">Crop controls</h2>
+      <div class="panel-row" style="margin-bottom:8px;">
+        <a class="tool-link" href="{% url 'dface' %}">All tools</a>
+      </div>
+
+      <form action="/crop" method="get" class="panel-row">
+        <label>X <input class="input-short" type="text" name="xname" required></label>
+        <label>Y <input class="input-short" type="text" name="yname" required></label>
+        <label>W <input class="input-short" type="text" name="width" required></label>
+        <label>H <input class="input-short" type="text" name="height" required></label>
+        <button class="tool-link primary" type="submit">Crop</button>
+      </form>
+
+      <div class="panel-row" style="margin-top:14px;">
+        <a class="tool-link" href="{% url 'change_fun' %}">Apply</a>
+        <a class="tool-link" href="{{ path }}" download="cropped.png">Download orig</a>
+      </div>
+    </section>
+
+    <section class="panel-block">
+      <h2 style="margin-top:0; color:#1f2937;">Image preview</h2>
+      <div class="preview-box">
+        {% if path %}
+          <img src="{{ path }}" alt="Original" />
+        {% else %}
+          <span style="color:#64748b;">Upload a file first.</span>
+        {% endif %}
+        {% if path_temp %}
+          <img src="{{ path_temp }}" alt="Cropped edit" />
+        {% endif %}
+      </div>
+    </section>
+  </div>
+
+  <div class="panel-row" style="margin-top: 12px; flex-wrap: wrap;">
+    <a class="tool-link" href="{% url 'brightp_fun' %}">Brightness +</a>
+    <a class="tool-link" href="{% url 'brightn_fun' %}">Brightness -</a>
+    <a class="tool-link" href="{% url 'filter_fun' %}">Filter</a>
+    <a class="tool-link" href="{% url 'scaleup_fun' %}">Scale Up</a>
+    <a class="tool-link" href="{% url 'scaledown_fun' %}">Scale Down</a>
+    <a class="tool-link" href="{% url 'gray_fun' %}">Gray</a>
+    <a class="tool-link" href="{% url 'edge_fun' %}">Edge</a>
+    <a class="tool-link" href="{% url 'blur_fun' %}">Blur</a>
+    <a class="tool-link" href="{% url 'gaussian_fun' %}">Gaussian</a>
+    <a class="tool-link" href="{% url 'sharpen_fun' %}">Sharpen</a>
+    <a class="tool-link" href="{% url 'sepia_fun' %}">Sepia</a>
+    <a class="tool-link" href="{% url 'negative_fun' %}">Negative</a>
+  </div>
+</div>
+
+{% endblock content %}
